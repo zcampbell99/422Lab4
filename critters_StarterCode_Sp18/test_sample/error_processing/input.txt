@@ -1,0 +1,7 @@
+seed 10 abcdefghij
+make Craig 10 throwerror
+make Craig wrongstuff
+make Craig 10dontcountme
+step javaiscool
+show morewrongstuff
+quit

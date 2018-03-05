@@ -1,0 +1,6 @@
+error processing: seed 10 abcdefghij
+error processing: make Craig 10 throwerror
+error processing: make Craig wrongstuff
+error processing: make Craig 10dontcountme
+error processing: step javaiscool
+error processing: show morewrongstuff

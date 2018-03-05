@@ -1,0 +1,5 @@
+make Craig 1000
+stats Craig
+step 500
+stats Craig
+quit
