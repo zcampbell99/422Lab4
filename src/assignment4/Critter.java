@@ -266,6 +266,7 @@ public abstract class Critter {
 					System.out.print(" ");
 				}
 			}
+			System.out.print("|");
 		}
 		System.out.print("+");
 		for (int i = 0; i < Params.world_width-1; i++) {
