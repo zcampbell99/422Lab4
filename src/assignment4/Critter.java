@@ -49,13 +49,89 @@ public abstract class Critter {
 	
 	private int x_coord;
 	private int y_coord;
+
+	protected int getX() {
+		return x_coord;
+	}
+
+	protected int getY() {
+		return y_coord;
+	}
 	
 	protected final void walk(int direction) {
-	}
+		switch (direction) {
+			case 0:				// East
+				if (x_coord == Params.world_width-1)
+					x_coord = 0;
+				else
+					x_coord++;
+				break;
+			case 1:				// NorthEast
+				if (x_coord == Params.world_width-1)
+					x_coord = 0;
+				else
+					x_coord++;
+				if (y_coord == 0)
+					y_coord = Params.world_height-1;
+				else
+					y_coord++;
+				break;
+			case 2:				// North
+				if (y_coord == 0)
+					y_coord = Params.world_height-1;
+				else
+					y_coord++;
+				break;
+			case 3:				// NorthWest
+				if (x_coord == 0)
+					x_coord = Params.world_width-1;
+				else
+					x_coord--;
+				if (y_coord == 0)
+					y_coord = Params.world_height-1;
+				else
+					y_coord++;
+				break;
+			case 4:				// West
+				if (x_coord == 0)
+					x_coord = Params.world_width-1;
+				else
+					x_coord--;
+				break;
+			case 5:				// Southwest
+				if (x_coord == 0)
+					x_coord = Params.world_width-1;
+				else
+					x_coord--;
+				if (y_coord == Params.world_height-1)
+					y_coord = 0;
+				else
+					y_coord--;
+				break;
+			case 6:				// South
+				if (y_coord == Params.world_height-1)
+					y_coord = 0;
+				else
+					y_coord--;
+				break;
+			case 7:				// SouthEast
+				if (x_coord == Params.world_width-1)
+					x_coord = 0;
+				else
+					x_coord++;
+				if (y_coord == Params.world_height-1)
+					y_coord = 0;
+				else
+					y_coord--;
+				break;
+		}
+
+	}	// Accounts for going out of bounds - Doesn't subtract energy
 	
 	protected final void run(int direction) {
-		
-	}
+		walk(direction);
+		walk(direction);
+	}	// Calls "walk" twice - Doesn't subtract energy
 	
 	protected final void reproduce(Critter offspring, int direction) {
 	}
@@ -176,6 +252,25 @@ public abstract class Critter {
 	}
 	
 	public static void displayWorld() {
-		// Complete this method.
+		System.out.print("+");
+		for (int i = 0; i < Params.world_width-1; i++) {
+			System.out.print("-");
+		}
+		System.out.print("+");
+		for (int i = 0; i < Params.world_height-1; i++) {
+			System.out.print("|");
+			for (int j = 0; j < Params.world_width-1; j++) {
+				if (CritterWorld.findCritter(j, i)) {
+					System.out.print(CritterWorld.findCritter(j,i));
+				} else {
+					System.out.print(" ");
+				}
+			}
+		}
+		System.out.print("+");
+		for (int i = 0; i < Params.world_width-1; i++) {
+			System.out.print("-");
+		}
+		System.out.print("+");
 	}
 }
