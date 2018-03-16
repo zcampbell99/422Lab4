@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/4.iml" filepath="$PROJECT_DIR$/4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/422Lab4.iml" filepath="$PROJECT_DIR$/422Lab4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/critters_StarterCode_Sp18/critters_StarterCode_Sp18.iml" filepath="$PROJECT_DIR$/critters_StarterCode_Sp18/critters_StarterCode_Sp18.iml" />
     </modules>
   </component>
 </project>
