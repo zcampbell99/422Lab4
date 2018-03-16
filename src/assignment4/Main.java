@@ -9,6 +9,7 @@ package assignment4;
  * Spring 2018
  */
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
 import assignment4.Critter;
@@ -68,10 +69,45 @@ public class Main {
         /* Write your code below. */
         
         // System.out.println("GLHF");
-        Critter.displayWorld();
-        
+        ArrayList<String> input;                         //array list that holds the 2 initial input words
+        input = parse(kb);
+        while(input.size() != 0) {
+            //put all code to run the critter world here
+            input = parse(kb);
+        }
         /* Write your code above */
         System.out.flush();
 
+    }
+
+    public static ArrayList<String> parse(Scanner keyboard) {
+        ArrayList<String> input = new ArrayList<String>();
+        String quit = "quit";
+        String show = "show";
+        String step = "step";
+        String make = "make";
+        String command = keyboard.next().toLowerCase();
+        if(command.equals(quit)) {         //return empty array if user inputs "/quit"
+            return input;   //input remains empty if user inputs quit
+        }else{
+            input.add(command);
+        }
+        if(command.equals(show)){
+            Critter.displayWorld();
+        }else if(command.equals(step)){
+            Critter.worldTimeStep();
+        }else if(command.equals(make)){
+            String thisCritter = keyboard.next().toLowerCase();
+            try {
+                Critter.makeCritter(thisCritter);   //makes a critter if it's a valid critter class
+            } catch (InvalidCritterException e) {
+                e.printStackTrace();
+            }
+            input.add(thisCritter);
+        }else{
+            System.out.println("Invalid Command");
+        }
+        System.out.println("Input: " + input);
+        return input;
     }
 }

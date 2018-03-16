@@ -125,13 +125,14 @@ public abstract class Critter {
 					y_coord--;
 				break;
 		}
+        this.energy -= Params.walk_energy_cost;
+    }  // Accounts for going out of bounds
 
-	}	// Accounts for going out of bounds - Doesn't subtract energy
-	
 	protected final void run(int direction) {
 		walk(direction);
 		walk(direction);
-	}	// Calls "walk" twice - Doesn't subtract energy
+		this.energy -= Params.run_energy_cost - (2*Params.walk_energy_cost);
+    }  // Calls "walk" twice
 	
 	protected final void reproduce(Critter offspring, int direction) {
 	}
