@@ -11,7 +11,7 @@ package assignment4;
 
 import java.util.Scanner;
 import java.io.*;
-
+import assignment4.Critter;
 
 /*
  * Usage: java <pkgname>.Main <input file> test
@@ -68,6 +68,7 @@ public class Main {
         /* Write your code below. */
         
         // System.out.println("GLHF");
+        Critter.displayWorld();
         
         /* Write your code above */
         System.out.flush();
