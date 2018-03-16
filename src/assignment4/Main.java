@@ -95,7 +95,14 @@ public class Main {
         if(command.equals(show)){
             Critter.displayWorld();
         }else if(command.equals(step)){
-            Critter.worldTimeStep();
+            if(keyboard.hasNext()){
+                int numSteps = keyboard.nextInt();
+                for(int i = 0; i<numSteps; i++){
+                    Critter.worldTimeStep();    //implements step with a count if present
+                }
+            }else{
+                Critter.worldTimeStep();    //otherwise only does one time step
+            }
         }else if(command.equals(make)){
             String thisCritter = keyboard.next().toLowerCase();
             try {

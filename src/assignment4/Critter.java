@@ -246,7 +246,10 @@ public abstract class Critter {
 	 * Clear the world of all critters, dead and alive
 	 */
 	public static void clearWorld() {
-		// Complete this method.
+	    population.clear();
+	    babies.clear();
+	    //dead critters should already be resolved...they are removed from the list when they die
+        //only alive critters need to be taken care of
 	}
 	
 	public static void worldTimeStep() {
