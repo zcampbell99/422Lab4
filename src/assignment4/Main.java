@@ -79,7 +79,7 @@ public class Main {
         System.out.flush();
 
     }
-
+    // Testing committing
     public static ArrayList<String> parse(Scanner keyboard) {
         ArrayList<String> input = new ArrayList<String>();
         String quit = "quit";
