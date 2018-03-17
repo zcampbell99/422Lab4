@@ -13,6 +13,8 @@ package assignment4;
  */
 
 
+import java.io.InvalidClassException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /* see the PDF for descriptions of the methods and fields in this class
@@ -151,7 +153,31 @@ public abstract class Critter {
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
-
+        try {
+            Class c = Class.forName(critter_class_name);
+            Critter newCritter;
+            if (critter_class_name.equals("Critter1")) {
+                newCritter = (Critter1)c.getDeclaredConstructor().newInstance();
+                CritterWorld.critterList.add(newCritter);
+            } else if (critter_class_name.equals("Critter2")) {
+                newCritter = (Critter2)c.getDeclaredConstructor().newInstance();
+                CritterWorld.critterList.add(newCritter);
+            } else if (critter_class_name.equals("Critter3")) {
+                newCritter = (Critter3)c.getDeclaredConstructor().newInstance();
+                CritterWorld.critterList.add(newCritter);
+            } else if (critter_class_name.equals("Critter4")) {
+                newCritter = (Critter4)c.getDeclaredConstructor().newInstance();
+                CritterWorld.critterList.add(newCritter);
+            } else if (critter_class_name.equals("Craig")) {
+                newCritter = (Craig)c.getDeclaredConstructor().newInstance();
+                CritterWorld.critterList.add(newCritter);
+            } else if (critter_class_name.equals("Algae")) {
+                newCritter = (Algae)c.getDeclaredConstructor().newInstance();
+                CritterWorld.critterList.add(newCritter);
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new InvalidCritterException(critter_class_name);
+        }
 	}
 	
 	/**
