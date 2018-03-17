@@ -48,7 +48,10 @@ public abstract class Critter {
 	
 	private int energy = 0;
 	protected int getEnergy() { return energy; }
-	
+	protected void setEnergy(int e) {
+		this.energy = e;
+	}
+
 	private int x_coord;
 	private int y_coord;
 
@@ -58,6 +61,14 @@ public abstract class Critter {
 
 	protected int getY() {
 		return y_coord;
+	}
+
+	protected void setX(int x) {
+		this.x_coord = x;
+	}
+
+	protected void setY(int y) {
+		this.y_coord = y;
 	}
 	
 	protected final void walk(int direction) {

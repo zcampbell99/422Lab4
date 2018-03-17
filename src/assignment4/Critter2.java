@@ -10,6 +10,11 @@ public class Critter2 extends Critter {
 
     public Critter2() {
         dir = Critter.getRandomInt(8);
+        int randX = Critter.getRandomInt(Params.world_width-1);
+        int randY = Critter.getRandomInt(Params.world_height-1);
+        setX(randX);
+        setY(randY);
+        setEnergy(Params.start_energy);
     }
 
     public boolean fight(String not_used) { return true; }
