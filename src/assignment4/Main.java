@@ -105,12 +105,25 @@ public class Main {
             }
         }else if(command.equals(make)){
             String thisCritter = keyboard.next().toLowerCase();
-            try {
-                Critter.makeCritter(thisCritter);   //makes a critter if it's a valid critter class
-            } catch (InvalidCritterException e) {
-                e.printStackTrace();
-            }
             input.add(thisCritter);
+            if(keyboard.hasNext()){
+                int numCritters = keyboard.nextInt();
+                String stringNum = Integer.toString(numCritters);
+                input.add(stringNum);
+                for(int i = 0; i<numCritters; i++){
+                    try {
+                        Critter.makeCritter(thisCritter);   //implements make with a count if present and valid critter class
+                    } catch (InvalidCritterException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }else{
+                try {
+                    Critter.makeCritter(thisCritter);   //makes a single critter if it's a valid critter class
+                } catch (InvalidCritterException e) {
+                    e.printStackTrace();
+                }
+            }
         }else{
             System.out.println("Invalid Command");
         }
