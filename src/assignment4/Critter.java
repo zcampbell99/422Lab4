@@ -148,6 +148,86 @@ public abstract class Critter {
     }  // Calls "walk" twice
 	
 	protected final void reproduce(Critter offspring, int direction) {
+		if (Params.min_reproduce_energy <= energy) {
+			if (energy % 2 == 1) {							// Set the mother and baby's energy
+				offspring.setEnergy((int)((.5*energy)-0.5));
+				setEnergy((int)((.5*energy)+0.5));
+			} else {
+				offspring.setEnergy((int)(.5*energy));
+				setEnergy((int)(.5*energy));
+			}
+			switch (direction) {							// Set the baby's coordinates
+				case 0:                // East
+					if (x_coord == Params.world_width - 1)
+						offspring.x_coord = 0;
+					else
+						offspring.x_coord = x_coord + 1;
+					offspring.y_coord = y_coord;
+					break;
+				case 1:                // NorthEast
+					if (x_coord == Params.world_width - 1)
+						offspring.x_coord = 0;
+					else
+						offspring.x_coord = x_coord + 1;
+					if (y_coord == 0)
+						offspring.y_coord = Params.world_height - 1;
+					else
+						offspring.y_coord = y_coord + 1;
+					break;
+				case 2:                // North
+					if (y_coord == 0)
+						offspring.y_coord = Params.world_height - 1;
+					else
+						offspring.y_coord = y_coord + 1;
+					offspring.x_coord = x_coord;
+					break;
+				case 3:                // NorthWest
+					if (x_coord == 0)
+						offspring.x_coord = Params.world_width - 1;
+					else
+						offspring.x_coord = x_coord - 1;
+					if (y_coord == 0)
+						offspring.y_coord = Params.world_height - 1;
+					else
+						offspring.y_coord = y_coord + 1;
+					break;
+				case 4:                // West
+					if (x_coord == 0)
+						offspring.x_coord = Params.world_width - 1;
+					else
+						offspring.x_coord = x_coord - 1;
+					offspring.y_coord = y_coord;
+					break;
+				case 5:                // Southwest
+					if (x_coord == 0)
+						offspring.x_coord = Params.world_width - 1;
+					else
+						offspring.x_coord = x_coord - 1;
+					if (y_coord == Params.world_height - 1)
+						offspring.y_coord = 0;
+					else
+						offspring.y_coord = y_coord - 1;
+					break;
+				case 6:                // South
+					if (y_coord == Params.world_height - 1)
+						offspring.y_coord = 0;
+					else
+						offspring.y_coord = y_coord - 1;
+					offspring.x_coord = x_coord;
+					break;
+				case 7:                // SouthEast
+					if (x_coord == Params.world_width - 1)
+						offspring.x_coord = 0;
+					else
+						offspring.x_coord = x_coord + 1;
+					if (y_coord == Params.world_height - 1)
+						offspring.y_coord = 0;
+					else
+						offspring.y_coord = y_coord - 1;
+					break;
+			}
+			CritterWorld.babyList.add(offspring);
+		}
 	}
 
 	public abstract void doTimeStep();
@@ -282,8 +362,10 @@ public abstract class Critter {
 	/**
 	 * Clear the world of all critters, dead and alive
 	 */
-	public static void clearWorld() {
-		// Complete this method.
+	public static void clearWorld() {		// Clear the critters and babies
+		CritterWorld.critterList.clear();
+		CritterWorld.babyList.clear();
+		CritterWorld.algaeList.clear();
 	}
 	
 	public static void worldTimeStep() {

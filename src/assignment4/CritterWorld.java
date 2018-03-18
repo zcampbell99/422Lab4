@@ -5,7 +5,8 @@ import java.util.ArrayList;
 
 public class CritterWorld {
     protected static List<Critter> critterList = new ArrayList<>();
-
+    protected static List<Critter> babyList = new ArrayList<>();
+    protected static List<Critter> algaeList = new ArrayList<>();
 
     public static boolean findCritter(int x, int y) {
         for (int i = 0; i < critterList.size(); i++) {
