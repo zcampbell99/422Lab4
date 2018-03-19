@@ -10,6 +10,7 @@ package assignment4;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.io.*;
 import assignment4.Critter;
@@ -86,6 +87,8 @@ public class Main {
         String show = "show";
         String step = "step";
         String make = "make";
+        String seed = "seed";
+        String stats = "stats";
         String command = keyboard.next().toLowerCase();
         if(command.equals(quit)) {         //return empty array if user inputs "/quit"
             return input;   //input remains empty if user inputs quit
@@ -117,6 +120,22 @@ public class Main {
                     e.printStackTrace();
                 }
             }
+        }else if(command.equals(seed)){
+            int thisNum = keyboard.nextInt();
+            String stringNum = Integer.toString(thisNum);
+            input.add(stringNum);
+            Critter.setSeed(thisNum);
+        }else if(command.equals(stats)){
+            String thisCritter = keyboard.next().toLowerCase();
+            input.add(thisCritter);
+            List<Critter> thisCritterList = new ArrayList();
+            try {
+                thisCritterList = Critter.getInstances(thisCritter);
+            } catch (InvalidCritterException e) {
+                e.printStackTrace();
+            }
+            Critter.runStats(thisCritterList);  //NOT SURE IF THIS SHIT IS RIGHT LOL
+//            (Critter)thisCritter.runStats();
         }else{
             System.out.println("Invalid Command");
         }
