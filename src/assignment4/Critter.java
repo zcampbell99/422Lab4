@@ -18,6 +18,7 @@ import java.io.InvalidClassException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -31,7 +32,6 @@ public abstract class Critter {
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
-	private static HashMap<Point, LinkedList<Critter>> grid = new HashMap<Point, LinkedList<Critter>>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -237,7 +237,261 @@ public abstract class Critter {
 
 	public abstract void doTimeStep();
 	public abstract boolean fight(String opponent);
-	
+
+	public void encounter() {
+		for (int i = 0; i < CritterWorld.critterList.size(); i++) {
+			Critter enemy = CritterWorld.critterList.get(i);
+			if (this.x_coord == enemy.x_coord && this.y_coord == enemy.y_coord) {
+				boolean Afight = true;
+				boolean Bfight = true;
+				if (!this.fight(enemy.toString())) {
+					Afight = false;
+					int walkDir = findAdjDir(x_coord, y_coord);
+					if (walkDir != -1)
+						this.walk(walkDir);
+				}
+				if (!enemy.fight(this.toString())) {
+					Bfight = false;
+					int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
+					if (walkDir != -1)
+						enemy.walk(walkDir);
+				}
+				if (this.getEnergy() > 0 && enemy.getEnergy() > 0 && this.x_coord == enemy.x_coord && this.y_coord == enemy.y_coord) {
+					if (Afight && Bfight) {
+						if (Critter.getRandomInt(this.energy) >= Critter.getRandomInt(enemy.getEnergy())) {		// Critter A wins
+							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
+							enemy.setEnergy(0);
+						} else {
+							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
+							this.setEnergy(0);
+						}
+					} else if (!Afight && Bfight) {
+						if (Critter.getRandomInt(enemy.getEnergy()) > 0) {
+							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
+							this.setEnergy(0);
+						} else {
+							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
+							enemy.setEnergy(0);
+						}
+					} else if (!Bfight && Afight) {
+						if (Critter.getRandomInt(this.energy) > 0) {
+							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
+							enemy.setEnergy(0);
+						} else {
+							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
+							this.setEnergy(0);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private int findAdjDir(int x_OG, int y_OG) {
+		int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
+		if (x_OG == Params.world_width-1 && y_OG == Params.world_height-1) {		// Bottom right corner
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == 0 && crt.y_coord == Params.world_height-2)
+					h = 1;
+				if (crt.x_coord == 0 && crt.y_coord == Params.world_height-1)
+					a = 1;
+				if (crt.x_coord == 0 && crt.y_coord == 0)
+					b = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == Params.world_height-2)
+					g = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == 0)
+					c = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == Params.world_height-2)
+					f = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == Params.world_height-1)
+					e = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == 0)
+					d = 1;
+			}
+		}
+		if (x_OG == Params.world_width-1 && y_OG == 0) {							// Top right corner
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == 0 && crt.y_coord == 1)
+					b = 1;
+				if (crt.x_coord == 0 && crt.y_coord == Params.world_height-1)
+					h = 1;
+				if (crt.x_coord == 0 && crt.y_coord == 0)
+					a = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == Params.world_height-1)
+					g = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == 1)
+					c = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == 1)
+					d = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == Params.world_height-1)
+					f = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == 0)
+					e = 1;
+			}
+		}
+		if (x_OG == 0 && y_OG == 0) {												// Top left corner
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == 1 && crt.y_coord == 1)
+					b = 1;
+				if (crt.x_coord == 1 && crt.y_coord == Params.world_height-1)
+					h = 1;
+				if (crt.x_coord == 1 && crt.y_coord == 0)
+					a = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == Params.world_height-1)
+					g = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == 1)
+					c = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == 1)
+					d = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == Params.world_height-1)
+					f = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == 0)
+					e = 1;
+			}
+		}
+		if (x_OG == 0 && y_OG == Params.world_height-1) {						// Bottom left corner
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == 1 && crt.y_coord == 0)
+					b = 1;
+				if (crt.x_coord == 1 && crt.y_coord == Params.world_height-2)
+					h = 1;
+				if (crt.x_coord == 1 && crt.y_coord == Params.world_height-1)
+					a = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == Params.world_height-2)
+					g = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == 0)
+					c = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == 0)
+					d = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == Params.world_height-2)
+					f = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == Params.world_height-1)
+					e = 1;
+			}
+		}
+		if (y_OG == 0 && x_OG != 0 && x_OG != Params.world_width-1) {					// Top edge
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == x_OG+1 && crt.y_coord == 1)
+					b = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == 1)
+					d = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == 1)
+					c = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == Params.world_height-1)
+					g = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == 0)
+					e = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == Params.world_height-1)
+					f = 1;
+				if (crt.x_coord == x_OG+1 && crt.y_coord == 0)
+					a = 1;
+				if (crt.x_coord == x_OG+1 && crt.y_coord == Params.world_height-1)
+					h = 1;
+			}
+		}
+		if (y_OG == Params.world_height-1 && x_OG != 0 && x_OG != Params.world_width-1) {		// Bottom edge
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == x_OG+1 && crt.y_coord == 0)
+					b = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == 0)
+					d = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == 0)
+					c = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == Params.world_height-2)
+					g = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == Params.world_height-1)
+					e = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == Params.world_height-2)
+					f = 1;
+				if (crt.x_coord == x_OG+1 && crt.y_coord == Params.world_height-1)
+					a = 1;
+				if (crt.x_coord == x_OG+1 && crt.y_coord == Params.world_height-2)
+					h = 1;
+			}
+		}
+		if (x_OG == 0 && y_OG != 0 && y_OG != Params.world_height-1) {		// Left edge
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == 1 && crt.y_coord == y_OG)
+					a = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == y_OG)
+					e = 1;
+				if (crt.x_coord == 0 && crt.y_coord == y_OG+1)
+					c = 1;
+				if (crt.x_coord == 1 && crt.y_coord == y_OG+1)
+					b = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == y_OG+1)
+					d = 1;
+				if (crt.x_coord == 0 && crt.y_coord == y_OG-1)
+					g = 1;
+				if (crt.x_coord == 1 && crt.y_coord == y_OG-1)
+					h = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == y_OG-1)
+					f = 1;
+			}
+		}
+		if (x_OG == Params.world_width-1 && y_OG != 0 && y_OG != Params.world_height-1) {		// Right edge
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == y_OG)
+					e = 1;
+				if (crt.x_coord == 0 && crt.y_coord == y_OG)
+					a = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == y_OG+1)
+					c = 1;
+				if (crt.x_coord == 0 && crt.y_coord == y_OG+1)
+					b = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == y_OG+1)
+					d = 1;
+				if (crt.x_coord == Params.world_width-1 && crt.y_coord == y_OG-1)
+					g = 1;
+				if (crt.x_coord == 0 && crt.y_coord == y_OG-1)
+					h = 1;
+				if (crt.x_coord == Params.world_width-2 && crt.y_coord == y_OG-1)
+					f = 1;
+			}
+		}
+		if (x_OG != 0 && x_OG != Params.world_width-1 && y_OG != 0 && y_OG != Params.world_height-1) {		// In the middle
+			for (Critter crt : CritterWorld.critterList) {
+				if (crt.x_coord == x_OG+1 && crt.y_coord == y_OG)
+					a = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == y_OG)
+					e = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == y_OG+1)
+					c = 1;
+				if (crt.x_coord == x_OG+1 && crt.y_coord == y_OG+1)
+					b = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == y_OG+1)
+					d = 1;
+				if (crt.x_coord == x_OG && crt.y_coord == y_OG-1)
+					g = 1;
+				if (crt.x_coord == x_OG+1 && crt.y_coord == y_OG-1)
+					h = 1;
+				if (crt.x_coord == x_OG-1 && crt.y_coord == y_OG-1)
+					f = 1;
+			}
+		}
+		List<Integer> directions = new ArrayList<>();
+		if (a == 0)
+			directions.add(0);
+		if (b == 0)
+			directions.add(7);
+		if (c == 0)
+			directions.add(6);
+		if (d == 0)
+			directions.add(5);
+		if (e == 0)
+			directions.add(4);
+		if (f == 0)
+			directions.add(3);
+		if (g == 0)
+			directions.add(2);
+		if (h == 0)
+			directions.add(1);
+		if (directions.size() == 0)
+			return -1;
+		int random = getRandomInt(directions.size());
+		return directions.get(random);					// Choose a random empty location to move to
+	}
+
 	/**
 	 * create and initialize a Critter subclass.
 	 * critter_class_name must be the unqualified name of a concrete subclass of Critter, if not,
@@ -276,33 +530,6 @@ public abstract class Critter {
         }catch (IllegalAccessException e){
             throw new InvalidCritterException(critter_class_name);
         }
-//            Class<?> c = Class.forName(critter_class_name);
-//            Critter thisCrit = (Critter) c.newInstance();
-////            Class c = Class.forName(critter_class_name);
-//            System.out.println(c);
-//            Critter newCritter;
-//            if (critter_class_name.equals("Critter1")) {
-//                newCritter = (Critter1)c.getDeclaredConstructor().newInstance();
-//                CritterWorld.critterList.add(newCritter);
-//            } else if (critter_class_name.equals("Critter2")) {
-//                newCritter = (Critter2)c.getDeclaredConstructor().newInstance();
-//                CritterWorld.critterList.add(newCritter);
-//            } else if (critter_class_name.equals("Critter3")) {
-//                newCritter = (Critter3)c.getDeclaredConstructor().newInstance();
-//                CritterWorld.critterList.add(newCritter);
-//            } else if (critter_class_name.equals("Critter4")) {
-//                newCritter = (Critter4)c.getDeclaredConstructor().newInstance();
-//                CritterWorld.critterList.add(newCritter);
-//            } else if (critter_class_name.equals("Craig")) {
-//                newCritter = (Craig)c.getDeclaredConstructor().newInstance();
-//                CritterWorld.critterList.add(newCritter);
-//            } else if (critter_class_name.equals("Algae")) {
-//                newCritter = (Algae)c.getDeclaredConstructor().newInstance();
-//                CritterWorld.critterList.add(newCritter);
-//            }
-//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-//            throw new InvalidCritterException(critter_class_name);
-//        }
 	}
 	
 	/**

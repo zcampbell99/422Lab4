@@ -82,7 +82,7 @@ public class Main {
     }
     // Testing committing
     public static ArrayList<String> parse(Scanner keyboard) {
-        ArrayList<String> input = new ArrayList<String>();
+        ArrayList<String> input = new ArrayList<>();
         String quit = "quit";
         String show = "show";
         String step = "step";
@@ -90,52 +90,36 @@ public class Main {
         String seed = "seed";
         String stats = "stats";
         String command = keyboard.next().toLowerCase();
-        if(command.equals(quit)) {         //return empty array if user inputs "/quit"
+        if (command.equals(quit)) {         //return empty array if user inputs "/quit"
             return input;   //input remains empty if user inputs quit
-        }else{
+        } else {
             input.add(command);
         }
-        if(command.equals(show)){
+        if (command.equals(show)) {
             Critter.displayWorld();
-        }else if(command.equals(step)){
+        } else if (command.equals(step)) {
             Critter.worldTimeStep();
-        }else if(command.equals(make)){
+        } else if (command.equals(make)) {
             String thisCritter = keyboard.next();
             input.add(thisCritter);
-            if(keyboard.hasNext()){
+            if (keyboard.hasNext()) {
                 int numCritters = keyboard.nextInt();
                 String stringNum = Integer.toString(numCritters);
                 input.add(stringNum);
-                for(int i = 0; i<numCritters; i++){
+                for (int i = 0; i<numCritters; i++) {
                     try {
                         Critter.makeCritter(thisCritter);   //implements make with a count if present and valid critter class
                     } catch (InvalidCritterException e) {
                         e.printStackTrace();
                     }
                 }
-            }else{
+            } else {
                 try {
                     Critter.makeCritter(thisCritter);   //makes a single critter if it's a valid critter class
                 } catch (InvalidCritterException e) {
                     e.printStackTrace();
                 }
             }
-        }else if(command.equals(seed)){
-            int thisNum = keyboard.nextInt();
-            String stringNum = Integer.toString(thisNum);
-            input.add(stringNum);
-            Critter.setSeed(thisNum);
-        }else if(command.equals(stats)){
-            String thisCritter = keyboard.next().toLowerCase();
-            input.add(thisCritter);
-            List<Critter> thisCritterList = new ArrayList();
-            try {
-                thisCritterList = Critter.getInstances(thisCritter);
-            } catch (InvalidCritterException e) {
-                e.printStackTrace();
-            }
-            Critter.runStats(thisCritterList);  //NOT SURE IF THIS SHIT IS RIGHT LOL
-//            (Critter)thisCritter.runStats();
         }else{
             System.out.println("Invalid Command");
         }
