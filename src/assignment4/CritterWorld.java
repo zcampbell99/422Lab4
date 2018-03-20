@@ -20,4 +20,13 @@ public class CritterWorld {
         return false;
     }
 
+    public static Critter getFoundCritter(int x, int y) {
+        for (int i = 0; i < critterList.size(); i++) {
+            if (critterList.get(i).getX() == x && critterList.get(i).getY() == y) {
+                return critterList.get(i);
+            }
+        }
+        return new Algae();
+    }
+
 }
