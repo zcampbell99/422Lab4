@@ -13,9 +13,13 @@ package assignment4;
  */
 
 
+import java.awt.*;
 import java.io.InvalidClassException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+
 
 /* see the PDF for descriptions of the methods and fields in this class
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
@@ -27,6 +31,7 @@ public abstract class Critter {
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
+	private static HashMap<Point, LinkedList<Critter>> grid = new HashMap<Point, LinkedList<Critter>>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -244,31 +249,60 @@ public abstract class Critter {
 	 * @throws InvalidCritterException
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
+	    critter_class_name = critter_class_name.trim(); //get rid of any whitespace
         try {
-            Class c = Class.forName(critter_class_name);
-            Critter newCritter;
-            if (critter_class_name.equals("Critter1")) {
-                newCritter = (Critter1)c.getDeclaredConstructor().newInstance();
-                CritterWorld.critterList.add(newCritter);
-            } else if (critter_class_name.equals("Critter2")) {
-                newCritter = (Critter2)c.getDeclaredConstructor().newInstance();
-                CritterWorld.critterList.add(newCritter);
-            } else if (critter_class_name.equals("Critter3")) {
-                newCritter = (Critter3)c.getDeclaredConstructor().newInstance();
-                CritterWorld.critterList.add(newCritter);
-            } else if (critter_class_name.equals("Critter4")) {
-                newCritter = (Critter4)c.getDeclaredConstructor().newInstance();
-                CritterWorld.critterList.add(newCritter);
-            } else if (critter_class_name.equals("Craig")) {
-                newCritter = (Craig)c.getDeclaredConstructor().newInstance();
-                CritterWorld.critterList.add(newCritter);
-            } else if (critter_class_name.equals("Algae")) {
-                newCritter = (Algae)c.getDeclaredConstructor().newInstance();
-                CritterWorld.critterList.add(newCritter);
+            Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
+            Class<?> critter = Class.forName(myPackage + ".Critter");
+            if (critter.isAssignableFrom(critter_class)) {
+                Critter critter_instance = (Critter) critter_class.newInstance();    //IllegalAcessException if no nullary constructor
+
+                //prepare critter for simulation, create initial position
+                critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
+                critter_instance.y_coord = getRandomInt(Params.world_height);
+//                critter_instance.oldCritPos = new Point(critter_instance.x_coord, critter_instance.y_coord);
+//                pop.addLast(critter_instance);
+//                addToGrid(critter_instance);
+
+            } else {
+                throw new InvalidCritterException(critter_class_name);
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        }
+        catch (ClassNotFoundException e){
+            throw new InvalidCritterException(critter_class_name);
+        }catch (NoClassDefFoundError e){
+            throw new InvalidCritterException(critter_class_name);
+        }catch (InstantiationException e){
+            throw new InvalidCritterException(critter_class_name);
+        }catch (IllegalAccessException e){
             throw new InvalidCritterException(critter_class_name);
         }
+//            Class<?> c = Class.forName(critter_class_name);
+//            Critter thisCrit = (Critter) c.newInstance();
+////            Class c = Class.forName(critter_class_name);
+//            System.out.println(c);
+//            Critter newCritter;
+//            if (critter_class_name.equals("Critter1")) {
+//                newCritter = (Critter1)c.getDeclaredConstructor().newInstance();
+//                CritterWorld.critterList.add(newCritter);
+//            } else if (critter_class_name.equals("Critter2")) {
+//                newCritter = (Critter2)c.getDeclaredConstructor().newInstance();
+//                CritterWorld.critterList.add(newCritter);
+//            } else if (critter_class_name.equals("Critter3")) {
+//                newCritter = (Critter3)c.getDeclaredConstructor().newInstance();
+//                CritterWorld.critterList.add(newCritter);
+//            } else if (critter_class_name.equals("Critter4")) {
+//                newCritter = (Critter4)c.getDeclaredConstructor().newInstance();
+//                CritterWorld.critterList.add(newCritter);
+//            } else if (critter_class_name.equals("Craig")) {
+//                newCritter = (Craig)c.getDeclaredConstructor().newInstance();
+//                CritterWorld.critterList.add(newCritter);
+//            } else if (critter_class_name.equals("Algae")) {
+//                newCritter = (Algae)c.getDeclaredConstructor().newInstance();
+//                CritterWorld.critterList.add(newCritter);
+//            }
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+//            throw new InvalidCritterException(critter_class_name);
+//        }
 	}
 	
 	/**
@@ -395,4 +429,8 @@ public abstract class Critter {
 		}
 		System.out.println("+");
 	}
+	private static void addToGrid(Critter critter_instance){
+	    Point critpos = new Point(critter_instance.x_coord, critter_instance.y_coord);
+	    if()
+    }
 }
