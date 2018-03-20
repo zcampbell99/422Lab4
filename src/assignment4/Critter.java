@@ -510,13 +510,13 @@ public abstract class Critter {
             Class<?> critter = Class.forName(myPackage + ".Critter");
             if (critter.isAssignableFrom(critter_class)) {
                 Critter critter_instance = (Critter) critter_class.newInstance();    //IllegalAcessException if no nullary constructor
-
                 //prepare critter for simulation, create initial position
                 critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
                 critter_instance.y_coord = getRandomInt(Params.world_height);
 //                critter_instance.oldCritPos = new Point(critter_instance.x_coord, critter_instance.y_coord);
 //                pop.addLast(critter_instance);
                 addToGrid(critter_instance);
+                CritterWorld.critterList.add(critter_instance);
 
             } else {
                 throw new InvalidCritterException(critter_class_name);
@@ -644,7 +644,7 @@ public abstract class Critter {
 			System.out.print("|");
 			for (int j = 0; j < Params.world_width-1; j++) {
 				if (CritterWorld.findCritter(j, i)) {
-					System.out.print(CritterWorld.findCritter(j,i));
+					System.out.print(CritterWorld.getFoundCritter(j,i).toString());
 				} else {
 					System.out.print(" ");
 				}
