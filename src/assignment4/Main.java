@@ -82,6 +82,12 @@ public class Main {
         System.out.flush();
 
     }
+
+    /**
+     * Takes in user input as commands and does the appropriate actions
+     * @param keyboard
+     * @return input array which determines if user input "quit"
+     */
     // Testing committing
     public static ArrayList<String> parse(Scanner keyboard) {
         String s = kb.nextLine();
@@ -99,16 +105,16 @@ public class Main {
         }
         else {
             input.add(command[0]);
-        }if (command[0].equals(show)) {
+        }if (command[0].equals(show)) { //input was "show" command
             if(command.length == 1){
                 Critter.displayWorld();
             }else{
                 System.out.println("Error processing: " + s);
             }
-        }else if (command[0].equals(step)) {
+        }else if (command[0].equals(step)) {    //input was "step" command
             if(command.length == 1){
                 Critter.worldTimeStep();
-            }else if(command.length==2){
+            }else if(command.length==2){    //step command has <count>
                 try {
                     int count = Integer.valueOf(command[1]);
                     for(int i = 0; i < count; i++)
@@ -118,8 +124,8 @@ public class Main {
                     System.out.println("Error processing: " + s);
                 }
             }
-        } else if (command[0].equals(make)) {
-            if(command.length == 2) {
+        } else if (command[0].equals(make)) {   //input was "make" command
+            if(command.length == 2) {   //make a single critter of specified class
                 try {
                     Critter.makeCritter(command[1]);
                 }
@@ -127,7 +133,7 @@ public class Main {
                     System.out.println("error processing: " + s);
                 }
             }
-            else if(command.length == 3) {
+            else if(command.length == 3) {  //make <count> number of critters of specified class
                 try {
                     int count = Integer.valueOf(command[2]);
                     for(int i = 0; i < count; i++)
@@ -142,7 +148,7 @@ public class Main {
             }else{
                 System.out.println("error processing: " + s);
             }
-        }else if(command.equals(seed)){
+        }else if(command.equals(seed)){ //input was "seed" command
             if(command.length == 2) {
                 try {
                     long thisSeed = Long.valueOf(command[1]);
@@ -154,7 +160,7 @@ public class Main {
             }else {
                 System.out.println("error processing: " + s);
             }
-        }else if(command.equals(stats)) {
+        }else if(command.equals(stats)) {   //input was "stats" command
             if(command.length == 2) {
                 try {
                     String critter_class_name = command[1];
