@@ -32,6 +32,7 @@ public abstract class Critter {
 	private static String myPackage;
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
+	private static HashMap<Point, LinkedList<Critter>> grid = new HashMap<Point, LinkedList<Critter>>();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -515,7 +516,7 @@ public abstract class Critter {
                 critter_instance.y_coord = getRandomInt(Params.world_height);
 //                critter_instance.oldCritPos = new Point(critter_instance.x_coord, critter_instance.y_coord);
 //                pop.addLast(critter_instance);
-//                addToGrid(critter_instance);
+                addToGrid(critter_instance);
 
             } else {
                 throw new InvalidCritterException(critter_class_name);
@@ -658,6 +659,12 @@ public abstract class Critter {
 	}
 	private static void addToGrid(Critter critter_instance){
 	    Point critpos = new Point(critter_instance.x_coord, critter_instance.y_coord);
-	    if()
+	    if(grid.containsKey(critpos)){
+	        grid.get(critpos).add(critter_instance);
+        }else{
+	        LinkedList<Critter> crit = new LinkedList<Critter>();
+	        crit.add(critter_instance);
+	        grid.put(critpos,crit);
+        }
     }
 }
