@@ -9,6 +9,8 @@ package assignment4;
  * Spring 2018
  */
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -70,7 +72,7 @@ public class Main {
         /* Write your code below. */
         
         // System.out.println("GLHF");
-        ArrayList<String> input;                         //array list that holds the 2 initial input words
+        ArrayList<String> input;                         //array list that holds the input command
         input = parse(kb);
         while(input.size() != 0) {
             //put all code to run the critter world here
@@ -82,6 +84,8 @@ public class Main {
     }
     // Testing committing
     public static ArrayList<String> parse(Scanner keyboard) {
+        String s = kb.nextLine();
+        String[] command = s.split("\\s+"); //split command up into separate words
         ArrayList<String> input = new ArrayList<>();
         String quit = "quit";
         String show = "show";
@@ -89,41 +93,109 @@ public class Main {
         String make = "make";
         String seed = "seed";
         String stats = "stats";
-        String command = keyboard.next().toLowerCase();
-        if (command.equals(quit)) {         //return empty array if user inputs "/quit"
+        String first = command[0].toLowerCase();
+        if (first.equals(quit)) {         //return empty array if user inputs "/quit"
             return input;   //input remains empty if user inputs quit
-        } else {
-            input.add(command);
         }
-        if (command.equals(show)) {
-            Critter.displayWorld();
-        } else if (command.equals(step)) {
-            Critter.worldTimeStep();
-        } else if (command.equals(make)) {
-            String thisCritter = keyboard.next();
-            input.add(thisCritter);
-            if (keyboard.hasNext()) {
-                int numCritters = keyboard.nextInt();
-                String stringNum = Integer.toString(numCritters);
-                input.add(stringNum);
-                for (int i = 0; i<numCritters; i++) {
-                    try {
-                        Critter.makeCritter(thisCritter);   //implements make with a count if present and valid critter class
-                    } catch (InvalidCritterException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
+        else {
+            input.add(command[0]);
+        }if (command[0].equals(show)) {
+            if(command.length == 1){
+                Critter.displayWorld();
+            }else{
+                System.out.println("Error processing: " + s);
+            }
+        }else if (command[0].equals(step)) {
+            if(command.length == 1){
+                Critter.worldTimeStep();
+            }else if(command.length==2){
                 try {
-                    Critter.makeCritter(thisCritter);   //makes a single critter if it's a valid critter class
-                } catch (InvalidCritterException e) {
-                    e.printStackTrace();
+                    int count = Integer.valueOf(command[1]);
+                    for(int i = 0; i < count; i++)
+                        Critter.worldTimeStep();
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("Error processing: " + s);
                 }
             }
+        } else if (command[0].equals(make)) {
+            if(command.length == 2) {
+                try {
+                    Critter.makeCritter(command[1]);
+                }
+                catch(InvalidCritterException e) {
+                    System.out.println("error processing: " + s);
+                }
+            }
+            else if(command.length == 3) {
+                try {
+                    int count = Integer.valueOf(command[2]);
+                    for(int i = 0; i < count; i++)
+                        Critter.makeCritter(command[1]);
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("error processing: " + s);
+                }
+                catch(InvalidCritterException e) {
+                    System.out.println("error processing: " + s);
+                }
+            }else{
+                System.out.println("error processing: " + s);
+            }
+        }else if(command.equals(seed)){
+            if(command.length == 2) {
+                try {
+                    long thisSeed = Long.valueOf(command[1]);
+                    Critter.setSeed(thisSeed);
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("error processing: " + s);
+                }
+            }else {
+                System.out.println("error processing: " + s);
+            }
+        }else if(command.equals(stats)) {
+            if(command.length == 2) {
+                try {
+                    String critter_class_name = command[1];
+                    List<Critter> listOfCrits = Critter.getInstances(critter_class_name);
+                    if(listOfCrits.size() != 0) {   //if the critter class already exists then runStats
+                        Class<?> critter_class = listOfCrits.get(0).getClass();
+                        Method runs = critter_class.getMethod("runStats", java.util.List.class);
+                        runs.invoke(null,listOfCrits);
+                    }
+                    else {  //if the critter class does not already exist then create it and then runStats
+                        Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
+                        Class<?> critter = Class.forName(myPackage + ".Critter");
+                        if(critter.isAssignableFrom(critter_class)) {
+                            Method runs = critter_class.getMethod("runStats", java.util.List.class);
+                            runs.invoke(null,listOfCrits);
+                        }
+                    }
+                } catch (InvalidCritterException e) {
+                    System.out.println("error processing: " + s);
+                } catch (NoSuchMethodException e) {
+                    System.out.println("error processing: " + s);
+                } catch (SecurityException e) {
+                    System.out.println("error processing: " + s);
+                } catch (IllegalAccessException e) {
+                    System.out.println("error processing: " + s);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("error processing: " + s);
+                } catch (InvocationTargetException e) {
+                    System.out.println("error processing: " + s);
+                } catch (ClassNotFoundException e) {
+                    System.out.println("error processing: " + s);
+                } catch (NoClassDefFoundError e) {
+                    System.out.println("error processing: " + s);
+                }
+            }else{
+                System.out.println("error processing: " + s);
+            }
         }else{
-            System.out.println("Invalid Command");
+            System.out.println("Invalid Command " + s);
         }
-        System.out.println("Input: " + input);
+        System.out.println("Input: " + s);
         return input;
     }
 }
