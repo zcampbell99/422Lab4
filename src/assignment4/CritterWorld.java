@@ -8,6 +8,9 @@ public class CritterWorld {
     protected static List<Critter> babyList = new ArrayList<>();
     protected static List<Critter> algaeList = new ArrayList<>();
 
+    public CritterWorld() {
+    }
+
     public static boolean findCritter(int x, int y) {
         for (int i = 0; i < critterList.size(); i++) {
             if (critterList.get(i).getX() == x && critterList.get(i).getY() == y) {

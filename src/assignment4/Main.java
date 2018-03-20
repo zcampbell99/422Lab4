@@ -100,7 +100,7 @@ public class Main {
         } else if (command.equals(step)) {
             Critter.worldTimeStep();
         } else if (command.equals(make)) {
-            String thisCritter = keyboard.next().toLowerCase();
+            String thisCritter = keyboard.next();
             input.add(thisCritter);
             if (keyboard.hasNext()) {
                 int numCritters = keyboard.nextInt();
