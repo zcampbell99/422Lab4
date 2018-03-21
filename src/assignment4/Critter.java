@@ -88,11 +88,7 @@ public abstract class Critter {
             energy -= Params.run_energy_cost;
         if(numofmoves == 1 && isAlive(this)) {
             Point prev_pos = new Point(x_coord, y_coord);
-            int stepCount = 0;
-            while (stepCount < steps) {
-                move(direction);
-                stepCount++;
-            }
+            move(direction,steps, this);
             Point new_pos = new Point(x_coord, y_coord);
 
             if(initialMove) {	//if called in fight()
@@ -104,21 +100,20 @@ public abstract class Critter {
                 }
             }
             if(!new_pos.equals(prev_pos)) {
-                LinkedList<Critter> oldPosCrits = grid.get(prev_pos);
-                oldPosCrits.remove(this);
-                if(oldPosCrits.size() == 0) {   //no more critters at this location so remove it from grid
+                LinkedList<Critter> oldLoc = grid.get(prev_pos);
+                oldLoc.remove(this);
+                if(oldLoc.size() == 0) {
                     grid.remove(prev_pos);
                 }
                 if(grid.containsKey(new_pos)) {
                     grid.get(new_pos).add(this); //add to arraylist if position already has a critter
                 }
                 else {
-                    LinkedList<Critter> newPosCrits = new LinkedList<Critter>();
-                    newPosCrits.add(this);
-                    grid.put(new_pos, newPosCrits); //create new key with an arraylist of the 1 critter
+                    LinkedList<Critter> newLoc = new LinkedList<Critter>();
+                    newLoc.add(this);
+                    grid.put(new_pos, newLoc); //create new key with an arraylist of the 1 critter
                 }
             }
-
             x_coord = new_pos.x; y_coord = new_pos.y; // change the critter position to the new position
         }
     }
@@ -127,74 +122,51 @@ public abstract class Critter {
      * Change the coordinates of the critter to an adjacent location
      * @param direction is the direction in which to place the critter adjacent to it's current position
      */
-    protected final void move(int direction) {
-        switch (direction) {
-            case 0:				// East
-                if (x_coord == Params.world_width-1)
-                    x_coord = 0;
-                else
-                    x_coord++;
+    private static void move(int direction, int steps, Critter crit){
+        Point new_pos = new Point(crit.x_coord, crit.y_coord);
+        switch(direction) {
+            case 0:
+                new_pos.x += steps;
                 break;
-            case 1:				// NorthEast
-                if (x_coord == Params.world_width-1)
-                    x_coord = 0;
-                else
-                    x_coord++;
-                if (y_coord == 0)
-                    y_coord = Params.world_height-1;
-                else
-                    y_coord--;
+            case 1:
+                new_pos.x += steps;
+                new_pos.y -= steps;
                 break;
-            case 2:				// North
-                if (y_coord == 0)
-                    y_coord = Params.world_height-1;
-                else
-                    y_coord--;
+            case 2:
+                new_pos.y -= steps;
                 break;
-            case 3:				// NorthWest
-                if (x_coord == 0)
-                    x_coord = Params.world_width-1;
-                else
-                    x_coord--;
-                if (y_coord == 0)
-                    y_coord = Params.world_height-1;
-                else
-                    y_coord--;
+            case 3:
+                new_pos.x -= steps;
+                new_pos.y -= steps;
                 break;
-            case 4:				// West
-                if (x_coord == 0)
-                    x_coord = Params.world_width-1;
-                else
-                    x_coord--;
+            case 4:
+                new_pos.x -= steps;
                 break;
-            case 5:				// Southwest
-                if (x_coord == 0)
-                    x_coord = Params.world_width-1;
-                else
-                    x_coord--;
-                if (y_coord == Params.world_height-1)
-                    y_coord = 0;
-                else
-                    y_coord++;
+            case 5:
+                new_pos.x -= steps;
+                new_pos.y += steps;
                 break;
-            case 6:				// South
-                if (y_coord == Params.world_height-1)
-                    y_coord = 0;
-                else
-                    y_coord++;
+            case 6:
+                new_pos.y += steps;
                 break;
-            case 7:				// SouthEast
-                if (x_coord == Params.world_width-1)
-                    x_coord = 0;
-                else
-                    x_coord++;
-                if (y_coord == Params.world_height-1)
-                    y_coord = 0;
-                else
-                    y_coord++;
+            case 7:
+                new_pos.x += steps;
+                new_pos.y += steps;
                 break;
+            default:
+                throw new IllegalArgumentException();
         }
-        // Accounts for going out of bounds
+
+        if(new_pos.x >= Params.world_width)
+            new_pos.x -= Params.world_width;
+        else if (new_pos.x < 0)
+            new_pos.x += Params.world_width;
+        if(new_pos.y >= Params.world_height)
+            new_pos.y -= Params.world_height;
+        else if (new_pos.y < 0)
+            new_pos.y += Params.world_height;
+
+        crit.x_coord = new_pos.x; crit.y_coord = new_pos.y;
     }
 
     /**
@@ -310,12 +282,13 @@ public abstract class Critter {
      */
     public static void encounter(LinkedList<Critter> stackOfCritters) {
         initialMove = true;
-        for (int i = 0; i < stackOfCritters.size(); i++) {
+        while(stackOfCritters.size()>1){
+            int i = 0;
             Critter challenger = stackOfCritters.get(i);
             Critter enemy = stackOfCritters.get(i+1);
             boolean Afight = true;
             boolean Bfight = true;
-            if (!challenger.fight(enemy.toString())) {
+            if (!challenger.fight(enemy.toString())) {  //A doesn't want to fight and will try and walk/run away
                 Afight = false;
                 int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
                 if (walkDir != -1) {
@@ -326,7 +299,7 @@ public abstract class Critter {
                     }
                 }
             }
-            if (!enemy.fight(challenger.toString())) {
+            if (!enemy.fight(challenger.toString())) {  //B doesn't want to fight and will try and walk/run away
                 Bfight = false;
                 int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
                 if (walkDir != -1)
@@ -370,6 +343,12 @@ public abstract class Critter {
                         challenger.setEnergy(0);
                     }
                 }
+            }if(!isAlive(challenger)){  //remove dead critters from grid and critterList
+                stackOfCritters.remove(challenger);
+                CritterWorld.critterList.remove(challenger);
+            }if(!isAlive(enemy)){
+                stackOfCritters.remove(enemy);
+                CritterWorld.critterList.remove(enemy);
             }
         }
     }
