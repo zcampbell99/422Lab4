@@ -57,7 +57,7 @@ public abstract class Critter {
 
     private int x_coord;
     private int y_coord;
-    private static int numMoves = 0;
+    protected static int numMoves = 0;
 
     protected int getX() {
         return x_coord;
@@ -90,7 +90,7 @@ public abstract class Critter {
             Point prev_pos = new Point(x_coord, y_coord);
             int stepCount = 0;
             while (stepCount < steps) {
-                walk(direction);
+                move(direction);
             }
             Point new_pos = new Point(x_coord, y_coord);
 
@@ -123,10 +123,10 @@ public abstract class Critter {
     }
 
     /**
-     * Has the critter walk in the specified direction
-     * @param direction is the direction in which the critter will move on the grid
+     * Change the coordinates of the critter to an adjacent location
+     * @param direction is the direction in which to place the critter adjacent to it's current position
      */
-    protected final void walk(int direction) {
+    protected final void move(int direction) {
         switch (direction) {
             case 0:				// East
                 if (x_coord == Params.world_width-1)
@@ -193,7 +193,16 @@ public abstract class Critter {
                     y_coord++;
                 break;
         }
-    }  // Accounts for going out of bounds
+        // Accounts for going out of bounds
+    }
+
+    /**
+     * Has the critter walk in the specified direction
+     * @param direction is the direction in which the critter will move on the grid
+     */
+    protected final void walk(int direction) {
+        updateLoc(direction, 1, ++numMoves);
+    }
 
     /**
      * Has the critter run in the specified direction (two steps instead of one)

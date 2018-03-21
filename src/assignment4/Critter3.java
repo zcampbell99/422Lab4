@@ -22,6 +22,10 @@ public class Critter3 extends Critter {
 
     @Override
     public void doTimeStep() {
-
+        if (Critter.getRandomInt(10) <= 3) {
+            updateLoc(dir, 1, ++numMoves);
+        } else {
+            run(dir);
+        }
     }
 }
