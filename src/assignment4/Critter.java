@@ -81,7 +81,7 @@ public abstract class Critter {
      * @param steps is the number of steps the critter takes (walk or run)
      * @param numofmoves is the number of moves the critter has made in one time step
      */
-    private void updateLoc(int direction, int steps, int numofmoves) {
+    protected void updateLoc(int direction, int steps, int numofmoves) {
         if(steps==1)
             energy -= Params.walk_energy_cost;  //subtracts energy depending on if critter is walking or running
         else
@@ -308,14 +308,23 @@ public abstract class Critter {
             if (!challenger.fight(enemy.toString())) {
                 Afight = false;
                 int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
-                if (walkDir != -1)
-                    challenger.updateLoc(walkDir, 1, ++numMoves);
+                if (walkDir != -1) {
+                    if (Critter.getRandomInt(10) <= 4 && !challenger.toString().equals("3")) {
+                        challenger.updateLoc(walkDir, 1, ++numMoves);
+                    } else {
+                        challenger.run(walkDir);
+                    }
+                }
             }
             if (!enemy.fight(challenger.toString())) {
                 Bfight = false;
                 int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
                 if (walkDir != -1)
-                    enemy.updateLoc(walkDir, 1, ++numMoves);
+                    if (Critter.getRandomInt(10) <= 4 && !enemy.toString().equals("3")) {
+                        enemy.updateLoc(walkDir, 1, ++numMoves);
+                    } else {
+                        enemy.run(walkDir);
+                    }
             }
             if (challenger.getEnergy() > 0 && enemy.getEnergy() > 0 && challenger.x_coord == enemy.x_coord && challenger.y_coord == enemy.y_coord) {
                 if (Afight && Bfight) {
