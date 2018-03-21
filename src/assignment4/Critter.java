@@ -91,6 +91,7 @@ public abstract class Critter {
             int stepCount = 0;
             while (stepCount < steps) {
                 move(direction);
+                stepCount++;
             }
             Point new_pos = new Point(x_coord, y_coord);
 
@@ -781,13 +782,13 @@ public abstract class Critter {
      */
     public static void displayWorld() {
         System.out.print("+");
-        for (int i = 0; i < Params.world_width-1; i++) {
+        for (int i = 0; i < Params.world_width; i++) {
             System.out.print("-");
         }
         System.out.println("+");
-        for (int i = 0; i < Params.world_height-1; i++) {
+        for (int i = 0; i < Params.world_height; i++) {
             System.out.print("|");
-            for (int j = 0; j < Params.world_width-1; j++) {
+            for (int j = 0; j < Params.world_width; j++) {
                 if (CritterWorld.findCritter(j, i)) {
                     System.out.print(CritterWorld.getFoundCritter(j,i).toString());
                 } else {
@@ -797,7 +798,7 @@ public abstract class Critter {
             System.out.println("|");
         }
         System.out.print("+");
-        for (int i = 0; i < Params.world_width-1; i++) {
+        for (int i = 0; i < Params.world_width; i++) {
             System.out.print("-");
         }
         System.out.println("+");

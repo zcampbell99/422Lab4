@@ -75,7 +75,7 @@ public class Main {
         ArrayList<String> input;                         //array list that holds the input command
         CritterWorld.numAlgae = 0;
         input = parse(kb);
-        CritterWorld.numAlgae = 0;
+        //CritterWorld.numAlgae = 0;
         while(input.size() != 0) {
             //put all code to run the critter world here
             input = parse(kb);
