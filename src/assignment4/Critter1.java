@@ -18,6 +18,12 @@ public class Critter1 extends Critter {
 
     public boolean fight(String not_used) { return true; }
 
+    /**
+     * Overriding abstract Critter's doTimeStep()
+     * Can only walk one space or stand still
+     * Loses half as much energy as normal by walking and standing
+     * Wins every fight but it takes 1/3 of it’s starting energy to do so
+     */
     @Override
     public void doTimeStep() {
         /* take one step forward */

@@ -18,6 +18,12 @@ public class Critter2 extends Critter {
 
     public boolean fight(String not_used) { return true; }
 
+    /**
+     * Overriding abstract Critter's doTimeStep()
+     * Can run 2 times in one time step at the cost of 1 run
+     * Loses double energy by standing still
+     * Reproduces 2 babies at a time
+     */
     @Override
     public void doTimeStep() {
         /* take one step forward */
