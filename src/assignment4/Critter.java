@@ -104,9 +104,8 @@ public abstract class Critter {
                 }
             }
             if(!new_pos.equals(prev_pos)) {
-                LinkedList<Critter> oldPosCrits = grid.get(prev_pos);
-                oldPosCrits.remove(this);
-                if(oldPosCrits.size() == 0) {   //no more critters at this location so remove it from grid
+                grid.get(prev_pos).remove(this);
+                if(grid.get(prev_pos).size() == 0) {   //no more critters at this location so remove it from grid
                     grid.remove(prev_pos);
                 }
                 if(grid.containsKey(new_pos)) {
