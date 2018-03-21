@@ -120,6 +120,8 @@ public abstract class Critter {
     /**
      * Change the coordinates of the critter to an adjacent location
      * @param direction is the direction in which to place the critter adjacent to it's current position
+     * @param steps is the number of places to move
+     * @param crit is the critter that is moving
      */
     private static void move(int direction, int steps, Critter crit){
         Point new_pos = new Point(crit.x_coord, crit.y_coord);
