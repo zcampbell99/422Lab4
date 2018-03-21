@@ -157,16 +157,17 @@ public abstract class Critter {
                 throw new IllegalArgumentException();
         }
 
-        if(new_pos.x >= Params.world_width)
-            new_pos.x -= Params.world_width;
+        if(new_pos.x >= Params.world_width-1)
+            new_pos.x -= Params.world_width-1;
         else if (new_pos.x < 0)
-            new_pos.x += Params.world_width;
-        if(new_pos.y >= Params.world_height)
-            new_pos.y -= Params.world_height;
+            new_pos.x += Params.world_width-1;
+        if(new_pos.y >= Params.world_height-1)
+            new_pos.y -= Params.world_height-1;
         else if (new_pos.y < 0)
-            new_pos.y += Params.world_height;
+            new_pos.y += Params.world_height-1;
 
-        crit.x_coord = new_pos.x; crit.y_coord = new_pos.y;
+        crit.x_coord = new_pos.x;
+        crit.y_coord = new_pos.y;
     }
 
     /**
