@@ -1,7 +1,6 @@
 package assignment4;
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
- * Replace <...> with your actual data.
  * Zack Campbell
  * zcc254
  * Audrey Gan
@@ -30,6 +29,7 @@ public abstract class Critter {
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
 	private static HashMap<Point, LinkedList<Critter>> grid = new HashMap<Point, LinkedList<Critter>>();
     private static boolean initialMove;
+    private static int numMoves;
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -44,8 +44,7 @@ public abstract class Critter {
 	public static void setSeed(long new_seed) {
 		rand = new java.util.Random(new_seed);
 	}
-
-
+	
 	/* a one-character long string that visually depicts your critter in the ASCII interface */
 	public String toString() { return ""; }
 
@@ -575,7 +574,7 @@ public abstract class Critter {
             Class<?> critter = Class.forName(myPackage + ".Critter");
             if (critter.isAssignableFrom(critter_class)) {
                 Critter critter_instance = (Critter) critter_class.newInstance();    //IllegalAcessException if no nullary constructor
-                //set critter initial position
+                // Set critter's initial position
                 critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
                 critter_instance.y_coord = getRandomInt(Params.world_height);
                 critter_instance.setEnergy(Params.start_energy);
@@ -707,7 +706,6 @@ public abstract class Critter {
 	public static void clearWorld() {		// Clear the critters and babies
 		CritterWorld.critterList.clear();
 		CritterWorld.babyList.clear();
-//		population.clear();
 		grid.clear();
 	}
 
@@ -731,23 +729,7 @@ public abstract class Critter {
         for (Critter c : CritterWorld.critterList) {                // Move every critter
             c.doTimeStep();
         }
-        for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {      // Resolve all encounters
-            if (c.getValue().size() > 1) {
-                encounter(c.getValue());
-            }
-        }
-        for (Critter c : CritterWorld.babyList) {                  // Babies are now adults
-            CritterWorld.critterList.add(c);
-        }
-        CritterWorld.babyList.clear();                        // Clear the dead
-        clearDead();
-        for (int i = CritterWorld.numAlgae; i < Params.refresh_algae_count; i++) {  // Refresh algae
-            try {
-                makeCritter("Algae");
-            } catch (InvalidCritterException e) {
-                System.out.println("error processing: " + e.offending_class);
-            }
-        }
+        return true;
     }
 
     /**
