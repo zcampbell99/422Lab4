@@ -44,9 +44,9 @@ public class Critter4 extends Critter {
             int temp = Params.walk_energy_cost;
             Params.walk_energy_cost = Params.run_energy_cost/3;
             walk(Critter.getRandomInt(8));
-            numMoves--;
+            this.numMoves--;
             walk(Critter.getRandomInt(8));
-            numMoves--;
+            this.numMoves--;
             walk(Critter.getRandomInt(8));
             Params.walk_energy_cost = temp;
         } else {

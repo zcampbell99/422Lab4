@@ -188,7 +188,6 @@ public class Main {
         }else{
             System.out.println("invalid command: " + s);
         }
-//        System.out.println("Input: " + s);
         return input;
     }
 }

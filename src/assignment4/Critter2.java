@@ -29,7 +29,7 @@ public class Critter2 extends Critter {
         int doesMove = Critter.getRandomInt(10);
         if(doesMove <= 7){ //only moves with 80% chance
             run(dir);
-            numMoves--;
+            this.numMoves--;
             run(dir);
             this.setEnergy(this.getEnergy()+(Params.run_energy_cost));    //runs twice at the cost of only a single run
         }else{

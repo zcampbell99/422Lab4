@@ -57,7 +57,7 @@ public abstract class Critter {
 
     private int x_coord;
     private int y_coord;
-    protected static int numMoves = 0;
+    protected int numMoves = 0;
 
     protected int getX() {
         return x_coord;
@@ -88,9 +88,8 @@ public abstract class Critter {
             energy -= Params.run_energy_cost;
         if(numofmoves == 1 && isAlive(this)) {
             Point prev_pos = new Point(x_coord, y_coord);
-            move(direction,steps, this);
+            move(direction, steps, this);
             Point new_pos = new Point(x_coord, y_coord);
-
             if(initialMove) {	//if called in fight()
                 for(Map.Entry<Point, LinkedList<Critter>> entry : grid.entrySet()) { // iterate through each occupied position
                     if(new_pos.equals(new Point(entry.getKey().x, entry.getKey().y))) {
@@ -738,6 +737,7 @@ public abstract class Critter {
         initialMove = false;
         for (Critter c : CritterWorld.critterList) {                // Move every critter
             c.doTimeStep();
+            c.numMoves = 0;
         }
         for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {      // Resolve all encounters
             if (c.getValue().size() > 1) {
