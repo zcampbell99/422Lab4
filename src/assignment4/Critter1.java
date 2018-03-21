@@ -1,7 +1,7 @@
 package assignment4;
 
 public class Critter1 extends Critter {
-
+    //elephant Critter
     @Override
     public String toString() { return "1"; }
 
@@ -21,12 +21,12 @@ public class Critter1 extends Critter {
     @Override
     public void doTimeStep() {
         /* take one step forward */
-        int doesMove = Critter.getRandomInt(100);
-        if(doesMove <= 50){ //only moves with 50% chance
+        int doesMove = Critter.getRandomInt(10);
+        if(doesMove <= 4){ //only moves with 50% chance
             walk(dir);
             this.setEnergy(this.getEnergy()+(Params.walk_energy_cost/2));    //loses half as much energy as usual when walking
         }else{
-            this.setEnergy(this.getEnergy()+(Params.rest_energy_cost/2));    //loses half as much energy as usual when resting
+            this.setEnergy(this.getEnergy()-(Params.rest_energy_cost/2));    //loses half as much energy as usual when resting
         }
 
         if (getEnergy() > 150) {
