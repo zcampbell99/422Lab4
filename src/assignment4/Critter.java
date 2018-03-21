@@ -57,6 +57,7 @@ public abstract class Critter {
 
 	private int x_coord;
 	private int y_coord;
+    private static int numMoves = 0;
 
 	protected int getX() {
 		return x_coord;
@@ -87,7 +88,10 @@ public abstract class Critter {
             energy -= Params.run_energy_cost;
         if(numofmoves == 1 && isAlive(this)) {
             Point prev_pos = new Point(x_coord, y_coord);
-            walk(direction);
+            int stepCount = 0;
+            while (stepCount < steps) {
+                walk(direction);
+            }
             Point new_pos = new Point(x_coord, y_coord);
 
             if(initialMove) {	//if called in fight()
@@ -118,6 +122,10 @@ public abstract class Critter {
         }
     }
 
+    /**
+     * Has the critter walk in the specified direction
+     * @param direction is the direction in which the critter will move on the grid
+     */
 	protected final void walk(int direction) {
 		switch (direction) {
 			case 0:				// East
@@ -134,13 +142,13 @@ public abstract class Critter {
 				if (y_coord == 0)
 					y_coord = Params.world_height-1;
 				else
-					y_coord++;
+					y_coord--;
 				break;
 			case 2:				// North
 				if (y_coord == 0)
 					y_coord = Params.world_height-1;
 				else
-					y_coord++;
+					y_coord--;
 				break;
 			case 3:				// NorthWest
 				if (x_coord == 0)
@@ -150,7 +158,7 @@ public abstract class Critter {
 				if (y_coord == 0)
 					y_coord = Params.world_height-1;
 				else
-					y_coord++;
+					y_coord--;
 				break;
 			case 4:				// West
 				if (x_coord == 0)
@@ -166,13 +174,13 @@ public abstract class Critter {
 				if (y_coord == Params.world_height-1)
 					y_coord = 0;
 				else
-					y_coord--;
+					y_coord++;
 				break;
 			case 6:				// South
 				if (y_coord == Params.world_height-1)
 					y_coord = 0;
 				else
-					y_coord--;
+					y_coord++;
 				break;
 			case 7:				// SouthEast
 				if (x_coord == Params.world_width-1)
@@ -182,17 +190,24 @@ public abstract class Critter {
 				if (y_coord == Params.world_height-1)
 					y_coord = 0;
 				else
-					y_coord--;
+					y_coord++;
 				break;
 		}
     }  // Accounts for going out of bounds
 
+    /**
+     * Has the critter run in the specified direction (two steps instead of one)
+     * @param direction is the direction in which the critter will move on the grid
+     */
 	protected final void run(int direction) {
-		walk(direction);
-		walk(direction);
-		this.energy -= Params.run_energy_cost - (2*Params.walk_energy_cost);
-    }  // Calls "walk" twice
+        updateLoc(direction,2,++numMoves);
+    }
 
+    /**
+     * Creates children of the specified critter and puts them on the grid if they have enough energy
+     * @param offspring is the child whose energy and location will be set
+     * @param direction is the direction from the parent critter in which the child will be placed
+     */
 	protected final void reproduce(Critter offspring, int direction) {
 		if (Params.min_reproduce_energy <= energy) {
 			if (energy % 2 == 1) {							// Set the mother and baby's energy
@@ -279,6 +294,10 @@ public abstract class Critter {
 	public abstract void doTimeStep();
 	public abstract boolean fight(String opponent);
 
+    /**
+     * Decides the outcome of two critters who come into contact on the grid (run away or fight)
+     * @param stackOfCritters is the critters who appear at the same location on the grid
+     */
     public static void encounter(LinkedList<Critter> stackOfCritters) {
         initialMove = true;
         for (int i = 0; i < stackOfCritters.size(); i++) {
@@ -290,13 +309,13 @@ public abstract class Critter {
                 Afight = false;
                 int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
                 if (walkDir != -1)
-                    challenger.walk(walkDir);
+                    challenger.updateLoc(walkDir, 1, ++numMoves);
             }
             if (!enemy.fight(challenger.toString())) {
                 Bfight = false;
                 int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
                 if (walkDir != -1)
-                    enemy.walk(walkDir);
+                    enemy.updateLoc(walkDir, 1, ++numMoves);
             }
             if (challenger.getEnergy() > 0 && enemy.getEnergy() > 0 && challenger.x_coord == enemy.x_coord && challenger.y_coord == enemy.y_coord) {
                 if (Afight && Bfight) {
@@ -328,6 +347,12 @@ public abstract class Critter {
         }
     }
 
+    /**
+     * Find the direction in which the baby critter will be placed adjacent to the parent
+     * @param x_OG is the x coordinate of the parent
+     * @param y_OG is the y coordinate of the parent
+     * @return the direction in which you want to place the critter
+     */
     private static int findAdjDir(int x_OG, int y_OG) {
         int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
 		if (x_OG == Params.world_width-1 && y_OG == Params.world_height-1) {		// Bottom right corner
@@ -553,6 +578,10 @@ public abstract class Critter {
                 //set critter initial position
                 critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
                 critter_instance.y_coord = getRandomInt(Params.world_height);
+                critter_instance.setEnergy(Params.start_energy);
+                if(critter_class_name.equals("Algae")){
+                    CritterWorld.numAlgae++;
+                }
                 CritterWorld.critterList.add(critter_instance); //critter is added to the critter list
                 addToGrid(critter_instance);    //critter is added to the grid
             } else {
@@ -589,7 +618,7 @@ public abstract class Critter {
                 }
             }
         } catch (ClassNotFoundException e) {
-            throw new InvalidCritterException(critter_class_name); //case when critter_class doesn't even exist
+            throw new InvalidCritterException(critter_class_name); //case when critter_class doesn't exist
         } catch (NoClassDefFoundError e) {
             throw new InvalidCritterException(critter_class_name); //case when critter_class is different in case, gives error on case-insensitive systems
         }
@@ -682,26 +711,23 @@ public abstract class Critter {
 		grid.clear();
 	}
 
+    /**
+     * Clear the critter list and grid of all dead critters
+     */
 	public static void clearDead() {
-        Iterator<Critter> iterCrit = CritterWorld.critterList.iterator();
-        while (iterCrit.hasNext()) {
-            if (!isAlive(iterCrit.next())) {
-                Critter c = iterCrit.next();
-                if (!isAlive(c)) {
-                    Point p = new Point(c.x_coord, c.y_coord);
-                    for (int i = 0; i < grid.get(p).size(); i++) {
-                        if (grid.get(p).get(i) == c) {
-                            grid.get(p).remove(i);
-                            break;
-                        }
-                    }
-                    iterCrit.remove();
-                }
+        Iterator<Critter> it = CritterWorld.critterList.iterator();
+        while(it.hasNext()) {
+            if(!isAlive(it.next())) {
+                it.remove();
             }
         }
     }
 
+    /**
+     * Has all the critters do doTimeStep and resolve any encounters. Updates all critter states and clears the dead. Replenishes Algae
+     */
     public static void worldTimeStep() {
+        initialMove = false;
         for (Critter c : CritterWorld.critterList) {                // Move every critter
             c.doTimeStep();
         }
@@ -724,6 +750,9 @@ public abstract class Critter {
         }
     }
 
+    /**
+     * Prints a display of the grid world
+     */
     public static void displayWorld() {
 		System.out.print("+");
 		for (int i = 0; i < Params.world_width-1; i++) {
@@ -747,17 +776,27 @@ public abstract class Critter {
 		}
 		System.out.println("+");
 	}
+
+    /**
+     * Adds the critter instance to the world and sets its location
+     * @param critter_instance is the critter to be added to the world
+     */
 	private static void addToGrid(Critter critter_instance){
 	    Point critpos = new Point(critter_instance.x_coord, critter_instance.y_coord);
 	    if(grid.containsKey(critpos)){
-	        grid.get(critpos).add(critter_instance);
+	        grid.get(critpos).add(critter_instance);    //if the position is already occupied on the grid, just add critter to list of critters in position
         }else{
-	        LinkedList<Critter> crit = new LinkedList<Critter>();
+	        LinkedList<Critter> crit = new LinkedList<Critter>();   //if the position is empty, add the position and critter to the grid
 	        crit.add(critter_instance);
 	        grid.put(critpos,crit);
         }
     }
 
+    /**
+     * Checks to see if the specified critter is alive (energy > 0)
+     * @param crit is the critter to be checked
+     * @return true if the critter is alive and false if dead
+     */
     private static boolean isAlive(Critter crit) {
         if(crit.energy <= 0) {
             return false;

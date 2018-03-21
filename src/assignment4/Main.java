@@ -73,6 +73,7 @@ public class Main {
         
         // System.out.println("GLHF");
         ArrayList<String> input;                         //array list that holds the input command
+        CritterWorld.numAlgae = 0;
         input = parse(kb);
         while(input.size() != 0) {
             //put all code to run the critter world here
@@ -178,22 +179,8 @@ public class Main {
                             runs.invoke(null,listOfCrits);
                         }
                     }
-                } catch (InvalidCritterException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (NoSuchMethodException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (SecurityException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (IllegalAccessException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (InvocationTargetException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (ClassNotFoundException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (NoClassDefFoundError e) {
-                    System.out.println("Error processing: " + s);
+                } catch (InvalidCritterException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException | NoClassDefFoundError e) {
+                    System.out.println("error processing: " + s);
                 }
             }else{
                 System.out.println("Error processing: " + s);
