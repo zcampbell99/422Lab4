@@ -635,7 +635,15 @@ public abstract class Critter {
     public static void clearDead(){
         Iterator<Critter> iterCrit = CritterWorld.critterList.iterator();
         while(iterCrit.hasNext()) {
-            if(!isAlive(iterCrit.next())) {
+        	Critter c = iterCrit.next();
+            if(!isAlive(c)) {
+            	Point p = new Point(c.x_coord, c.y_coord);
+            	for (int i = 0; i < grid.get(p).size(); i++) {
+            		if (grid.get(p).get(i) == c) {
+            			grid.get(p).remove(i);
+            			break;
+					}
+				}
                 iterCrit.remove();
             }
         }
@@ -657,10 +665,18 @@ public abstract class Critter {
 				encounter(c.getValue());
 			}
 		}
-		for (Critter c : CritterWorld.babyList) {
+		for (Critter c : CritterWorld.babyList) {									// Babies are now adults
 			CritterWorld.critterList.add(c);
 		}
-		CritterWorld.babyList.clear();
+		CritterWorld.babyList.clear();												// Clear the dead
+		clearDead();
+		for (int i = CritterWorld.numAlgae; i < Params.refresh_algae_count; i++) {	// Refresh algae
+			try {
+				makeCritter("Algae");
+			} catch (InvalidCritterException e) {
+				System.out.println("error processing: " + e.offending_class);
+			}
+		}
 	}
 	
 	public static void displayWorld() {

@@ -169,8 +169,7 @@ public class Main {
                         Class<?> critter_class = listOfCrits.get(0).getClass();
                         Method runs = critter_class.getMethod("runStats", java.util.List.class);
                         runs.invoke(null,listOfCrits);
-                    }
-                    else {  //if the critter class does not already exist then create it and then runStats
+                    } else {  //if the critter class does not already exist then create it and then runStats
                         Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
                         Class<?> critter = Class.forName(myPackage + ".Critter");
                         if(critter.isAssignableFrom(critter_class)) {
