@@ -104,7 +104,7 @@ public class Main {
             return input;   //input remains empty if user inputs quit
         }
         else {
-            input.add(command[0]);
+            input.add(first);
         }if (first.equals(show)) { //input was "show" command
             if(command.length == 1){
                 Critter.displayWorld();
@@ -169,8 +169,7 @@ public class Main {
                         Class<?> critter_class = listOfCrits.get(0).getClass();
                         Method runs = critter_class.getMethod("runStats", java.util.List.class);
                         runs.invoke(null,listOfCrits);
-                    }
-                    else {  //if the critter class does not already exist then create it and then runStats
+                    } else {  //if the critter class does not already exist then create it and then runStats
                         Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
                         Class<?> critter = Class.forName(myPackage + ".Critter");
                         if(critter.isAssignableFrom(critter_class)) {
@@ -178,22 +177,8 @@ public class Main {
                             runs.invoke(null,listOfCrits);
                         }
                     }
-                } catch (InvalidCritterException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (NoSuchMethodException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (SecurityException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (IllegalAccessException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (InvocationTargetException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (ClassNotFoundException e) {
-                    System.out.println("Error processing: " + s);
-                } catch (NoClassDefFoundError e) {
-                    System.out.println("Error processing: " + s);
+                } catch (InvalidCritterException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException | NoClassDefFoundError e) {
+                    System.out.println("error processing: " + s);
                 }
             }else{
                 System.out.println("Error processing: " + s);

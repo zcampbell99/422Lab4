@@ -1,7 +1,6 @@
 package assignment4;
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
- * Replace <...> with your actual data.
  * Zack Campbell
  * zcc254
  * Audrey Gan
@@ -44,8 +43,7 @@ public abstract class Critter {
 	public static void setSeed(long new_seed) {
 		rand = new java.util.Random(new_seed);
 	}
-
-
+	
 	/* a one-character long string that visually depicts your critter in the ASCII interface */
 	public String toString() { return ""; }
 
@@ -328,8 +326,8 @@ public abstract class Critter {
         }
     }
 
-    private static int findAdjDir(int x_OG, int y_OG) {
-        int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
+	private static int findAdjDir(int x_OG, int y_OG) {
+		int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
 		if (x_OG == Params.world_width-1 && y_OG == Params.world_height-1) {		// Bottom right corner
 			for (Critter crt : CritterWorld.critterList) {
 				if (crt.x_coord == 0 && crt.y_coord == Params.world_height-2)
@@ -550,11 +548,13 @@ public abstract class Critter {
             Class<?> critter = Class.forName(myPackage + ".Critter");
             if (critter.isAssignableFrom(critter_class)) {
                 Critter critter_instance = (Critter) critter_class.newInstance();    //IllegalAcessException if no nullary constructor
-                //set critter initial position
+                // Set critter's initial position
                 critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
                 critter_instance.y_coord = getRandomInt(Params.world_height);
-                CritterWorld.critterList.add(critter_instance); //critter is added to the critter list
-                addToGrid(critter_instance);    //critter is added to the grid
+                addToGrid(critter_instance);        // critter is added to the adult critter list
+				if (critter_class_name.equals("Algae"))
+					CritterWorld.numAlgae++;
+                CritterWorld.critterList.add(critter_instance);         // critter is added to the grid
             } else {
                 throw new InvalidCritterException(critter_class_name);
             }
@@ -678,53 +678,59 @@ public abstract class Critter {
 	public static void clearWorld() {		// Clear the critters and babies
 		CritterWorld.critterList.clear();
 		CritterWorld.babyList.clear();
-//		population.clear();
 		grid.clear();
 	}
 
-	public static void clearDead() {
+    public static void clearDead(){
         Iterator<Critter> iterCrit = CritterWorld.critterList.iterator();
-        while (iterCrit.hasNext()) {
-            if (!isAlive(iterCrit.next())) {
-                Critter c = iterCrit.next();
-                if (!isAlive(c)) {
-                    Point p = new Point(c.x_coord, c.y_coord);
-                    for (int i = 0; i < grid.get(p).size(); i++) {
-                        if (grid.get(p).get(i) == c) {
-                            grid.get(p).remove(i);
-                            break;
-                        }
-                    }
-                    iterCrit.remove();
-                }
+        while(iterCrit.hasNext()) {
+        	Critter c = iterCrit.next();
+            if(!isAlive(c)) {
+            	if (c.toString().equals("@"))
+            		CritterWorld.numAlgae--;
+            	Point p = new Point(c.x_coord, c.y_coord);
+            	for (int i = 0; i < grid.get(p).size(); i++) {
+            		if (grid.get(p).get(i) == c) {
+            			grid.get(p).remove(i);
+            			break;
+					}
+				}
+                iterCrit.remove();
             }
         }
+    }
+
+    private static boolean isAlive(Critter crit) {
+        if(crit.energy <= 0) {
+            return false;
+        }
+        return true;
     }
 
     public static void worldTimeStep() {
-        for (Critter c : CritterWorld.critterList) {                // Move every critter
-            c.doTimeStep();
-        }
-        for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {      // Resolve all encounters
-            if (c.getValue().size() > 1) {
-                encounter(c.getValue());
-            }
-        }
-        for (Critter c : CritterWorld.babyList) {                  // Babies are now adults
-            CritterWorld.critterList.add(c);
-        }
-        CritterWorld.babyList.clear();                        // Clear the dead
-        clearDead();
-        for (int i = CritterWorld.numAlgae; i < Params.refresh_algae_count; i++) {  // Refresh algae
-            try {
-                makeCritter("Algae");
-            } catch (InvalidCritterException e) {
-                System.out.println("error processing: " + e.offending_class);
-            }
-        }
-    }
-
-    public static void displayWorld() {
+		for (Critter c : CritterWorld.critterList) {								// Move every critter
+			c.doTimeStep();
+		}
+		for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {			// Resolve all encounters
+			if (c.getValue().size() > 1) {
+				encounter(c.getValue());
+			}
+		}
+		for (Critter c : CritterWorld.babyList) {									// Babies are now adults
+			CritterWorld.critterList.add(c);
+		}
+		CritterWorld.babyList.clear();												// Clear the dead
+		clearDead();
+		for (int i = CritterWorld.numAlgae; i < Params.refresh_algae_count; i++) {	// Refresh algae
+			try {
+				makeCritter("Algae");
+			} catch (InvalidCritterException e) {
+				System.out.println("error processing: " + e.offending_class);
+			}
+		}
+	}
+	
+	public static void displayWorld() {
 		System.out.print("+");
 		for (int i = 0; i < Params.world_width-1; i++) {
 			System.out.print("-");
