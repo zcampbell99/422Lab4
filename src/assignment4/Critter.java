@@ -29,6 +29,7 @@ public abstract class Critter {
 	private	static List<Critter> population = new java.util.ArrayList<Critter>();
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
 	private static HashMap<Point, LinkedList<Critter>> grid = new HashMap<Point, LinkedList<Critter>>();
+    private static boolean initialMove;
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -72,6 +73,50 @@ public abstract class Critter {
 	protected void setY(int y) {
 		this.y_coord = y;
 	}
+
+    /**
+     * Updates the location and energy of the critter when moving
+     * @param direction is the direction that the critter moves in
+     * @param steps is the number of steps the critter takes (walk or run)
+     * @param numofmoves is the number of moves the critter has made in one time step
+     */
+    private void updateLoc(int direction, int steps, int numofmoves) {
+        if(steps==1)
+            energy -= Params.walk_energy_cost;  //subtracts energy depending on if critter is walking or running
+        else
+            energy -= Params.run_energy_cost;
+        if(numofmoves == 1 && isAlive(this)) {
+            Point prev_pos = new Point(x_coord, y_coord);
+            walk(direction);
+            Point new_pos = new Point(x_coord, y_coord);
+
+            if(initialMove) {	//if called in fight()
+                for(Map.Entry<Point, LinkedList<Critter>> entry : grid.entrySet()) { // iterate through each occupied position
+                    if(new_pos.equals(new Point(entry.getKey().x, entry.getKey().y))) {
+                        new_pos = prev_pos;  // if the position is already occupied by a critter don't move this one
+                        break;
+                    }
+                }
+            }
+            if(!new_pos.equals(prev_pos)) {
+                LinkedList<Critter> oldPosCrits = grid.get(prev_pos);
+                oldPosCrits.remove(this);
+                if(oldPosCrits.size() == 0) {   //no more critters at this location so remove it from grid
+                    grid.remove(prev_pos);
+                }
+                if(grid.containsKey(new_pos)) {
+                    grid.get(new_pos).add(this); //add to arraylist if position already has a critter
+                }
+                else {
+                    LinkedList<Critter> newPosCrits = new LinkedList<Critter>();
+                    newPosCrits.add(this);
+                    grid.put(new_pos, newPosCrits); //create new key with an arraylist of the 1 critter
+                }
+            }
+
+            x_coord = new_pos.x; y_coord = new_pos.y; // change the critter position to the new position
+        }
+    }
 
 	protected final void walk(int direction) {
 		switch (direction) {
@@ -140,7 +185,6 @@ public abstract class Critter {
 					y_coord--;
 				break;
 		}
-        this.energy -= Params.walk_energy_cost;
     }  // Accounts for going out of bounds
 
 	protected final void run(int direction) {
@@ -235,57 +279,57 @@ public abstract class Critter {
 	public abstract void doTimeStep();
 	public abstract boolean fight(String opponent);
 
-	public void encounter() {
-		for (int i = 0; i < CritterWorld.critterList.size(); i++) {
-			Critter enemy = CritterWorld.critterList.get(i);
-			if (this.x_coord == enemy.x_coord && this.y_coord == enemy.y_coord) {
-				boolean Afight = true;
-				boolean Bfight = true;
-				if (!this.fight(enemy.toString())) {
-					Afight = false;
-					int walkDir = findAdjDir(x_coord, y_coord);
-					if (walkDir != -1)
-						this.walk(walkDir);
-				}
-				if (!enemy.fight(this.toString())) {
-					Bfight = false;
-					int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
-					if (walkDir != -1)
-						enemy.walk(walkDir);
-				}
-				if (this.getEnergy() > 0 && enemy.getEnergy() > 0 && this.x_coord == enemy.x_coord && this.y_coord == enemy.y_coord) {
-					if (Afight && Bfight) {
-						if (Critter.getRandomInt(this.energy) >= Critter.getRandomInt(enemy.getEnergy())) {		// Critter A wins
-							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
-							enemy.setEnergy(0);
-						} else {
-							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
-							this.setEnergy(0);
-						}
-					} else if (!Afight && Bfight) {
-						if (Critter.getRandomInt(enemy.getEnergy()) > 0) {
-							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
-							this.setEnergy(0);
-						} else {
-							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
-							enemy.setEnergy(0);
-						}
-					} else if (!Bfight && Afight) {
-						if (Critter.getRandomInt(this.energy) > 0) {
-							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
-							enemy.setEnergy(0);
-						} else {
-							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
-							this.setEnergy(0);
-						}
-					}
-				}
-			}
-		}
-	}
+    public static void encounter(LinkedList<Critter> stackOfCritters) {
+        initialMove = true;
+        for (int i = 0; i < stackOfCritters.size(); i++) {
+            Critter challenger = stackOfCritters.get(i);
+            Critter enemy = stackOfCritters.get(i+1);
+            boolean Afight = true;
+            boolean Bfight = true;
+            if (!challenger.fight(enemy.toString())) {
+                Afight = false;
+                int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
+                if (walkDir != -1)
+                    challenger.walk(walkDir);
+            }
+            if (!enemy.fight(challenger.toString())) {
+                Bfight = false;
+                int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
+                if (walkDir != -1)
+                    enemy.walk(walkDir);
+            }
+            if (challenger.getEnergy() > 0 && enemy.getEnergy() > 0 && challenger.x_coord == enemy.x_coord && challenger.y_coord == enemy.y_coord) {
+                if (Afight && Bfight) {
+                    if (Critter.getRandomInt(challenger.energy) >= Critter.getRandomInt(enemy.getEnergy())) {    // Critter A wins
+                        challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+                        enemy.setEnergy(0);
+                    } else {
+                        enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+                        challenger.setEnergy(0);
+                    }
+                } else if (!Afight && Bfight) {
+                    if (Critter.getRandomInt(enemy.getEnergy()) > 0) {
+                        enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+                        challenger.setEnergy(0);
+                    } else {
+                        challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+                        enemy.setEnergy(0);
+                    }
+                } else if (!Bfight && Afight) {
+                    if (Critter.getRandomInt(challenger.energy) > 0) {
+                        challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+                        enemy.setEnergy(0);
+                    } else {
+                        enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+                        challenger.setEnergy(0);
+                    }
+                }
+            }
+        }
+    }
 
-	private int findAdjDir(int x_OG, int y_OG) {
-		int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
+    private static int findAdjDir(int x_OG, int y_OG) {
+        int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
 		if (x_OG == Params.world_width-1 && y_OG == Params.world_height-1) {		// Bottom right corner
 			for (Critter crt : CritterWorld.critterList) {
 				if (crt.x_coord == 0 && crt.y_coord == Params.world_height-2)
@@ -634,25 +678,53 @@ public abstract class Critter {
 	public static void clearWorld() {		// Clear the critters and babies
 		CritterWorld.critterList.clear();
 		CritterWorld.babyList.clear();
-		CritterWorld.algaeList.clear();
 //		population.clear();
 		grid.clear();
 	}
 
-	public static void clearDead(){
+	public static void clearDead() {
         Iterator<Critter> iterCrit = CritterWorld.critterList.iterator();
-        while(iterCrit.hasNext()) {
-            if(!isAlive(iterCrit.next())) {
-                iterCrit.remove();
+        while (iterCrit.hasNext()) {
+            if (!isAlive(iterCrit.next())) {
+                Critter c = iterCrit.next();
+                if (!isAlive(c)) {
+                    Point p = new Point(c.x_coord, c.y_coord);
+                    for (int i = 0; i < grid.get(p).size(); i++) {
+                        if (grid.get(p).get(i) == c) {
+                            grid.get(p).remove(i);
+                            break;
+                        }
+                    }
+                    iterCrit.remove();
+                }
             }
         }
     }
 
-	public static void worldTimeStep() {
-		// Complete this method.
-	}
+    public static void worldTimeStep() {
+        for (Critter c : CritterWorld.critterList) {                // Move every critter
+            c.doTimeStep();
+        }
+        for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {      // Resolve all encounters
+            if (c.getValue().size() > 1) {
+                encounter(c.getValue());
+            }
+        }
+        for (Critter c : CritterWorld.babyList) {                  // Babies are now adults
+            CritterWorld.critterList.add(c);
+        }
+        CritterWorld.babyList.clear();                        // Clear the dead
+        clearDead();
+        for (int i = CritterWorld.numAlgae; i < Params.refresh_algae_count; i++) {  // Refresh algae
+            try {
+                makeCritter("Algae");
+            } catch (InvalidCritterException e) {
+                System.out.println("error processing: " + e.offending_class);
+            }
+        }
+    }
 
-	public static void displayWorld() {
+    public static void displayWorld() {
 		System.out.print("+");
 		for (int i = 0; i < Params.world_width-1; i++) {
 			System.out.print("-");

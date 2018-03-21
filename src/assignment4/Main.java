@@ -130,7 +130,7 @@ public class Main {
                     Critter.makeCritter(command[1]);
                 }
                 catch(InvalidCritterException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 }
             }
             else if(command.length == 3) {  //make <count> number of critters of specified class
@@ -140,13 +140,13 @@ public class Main {
                         Critter.makeCritter(command[1]);
                 }
                 catch(NumberFormatException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 }
                 catch(InvalidCritterException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 }
             }else{
-                System.out.println("error processing: " + s);
+                System.out.println("Error processing: " + s);
             }
         }else if(first.equals(seed)){ //input was "seed" command
             if(command.length == 2) {
@@ -155,10 +155,10 @@ public class Main {
                     Critter.setSeed(thisSeed);
                 }
                 catch(NumberFormatException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 }
             }else {
-                System.out.println("error processing: " + s);
+                System.out.println("Error processing: " + s);
             }
         }else if(first.equals(stats)) {   //input was "stats" command
             if(command.length == 2) {
@@ -179,24 +179,24 @@ public class Main {
                         }
                     }
                 } catch (InvalidCritterException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 } catch (NoSuchMethodException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 } catch (SecurityException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 } catch (IllegalAccessException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 } catch (InvocationTargetException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 } catch (ClassNotFoundException e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 } catch (NoClassDefFoundError e) {
-                    System.out.println("error processing: " + s);
+                    System.out.println("Error processing: " + s);
                 }
             }else{
-                System.out.println("error processing: " + s);
+                System.out.println("Error processing: " + s);
             }
         }else{
             System.out.println("Invalid Command " + s);
