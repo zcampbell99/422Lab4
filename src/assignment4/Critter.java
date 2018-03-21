@@ -317,7 +317,7 @@ public abstract class Critter {
                 int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
                 if (walkDir != -1) {
                     if (Critter.getRandomInt(10) <= 4 && !challenger.toString().equals("3")) {
-                        challenger.updateLoc(walkDir, 1, ++numMoves);
+                        challenger.walk(walkDir);
                     } else {
                         challenger.run(walkDir);
                     }
@@ -328,13 +328,21 @@ public abstract class Critter {
                 int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
                 if (walkDir != -1)
                     if (Critter.getRandomInt(10) <= 4 && !enemy.toString().equals("3")) {
-                        enemy.updateLoc(walkDir, 1, ++numMoves);
+                        enemy.walk(walkDir);
                     } else {
                         enemy.run(walkDir);
                     }
             }
             if (challenger.getEnergy() > 0 && enemy.getEnergy() > 0 && challenger.x_coord == enemy.x_coord && challenger.y_coord == enemy.y_coord) {
-                if (Afight && Bfight) {
+                if(enemy.toString().equals("1")){
+                    int winEnergy = (challenger.getEnergy()/2);
+                    enemy.setEnergy(((enemy.getEnergy()*2)/3)+winEnergy); //elephant loses a third of their energy but gains half of opponent's energy
+                    challenger.setEnergy(0); //opponent is defeated
+                }else if(challenger.toString().equals("1")){
+                    int winEnergy = (enemy.getEnergy()/2);
+                    challenger.setEnergy(((challenger.getEnergy()*2)/3)+winEnergy); //elephant loses a third of their energy but gains half of opponent's energy
+                    enemy.setEnergy(0); //opponent is defeated
+                } else if (Afight && Bfight){
                     if (Critter.getRandomInt(challenger.energy) >= Critter.getRandomInt(enemy.getEnergy())) {    // Critter A wins
                         challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
                         enemy.setEnergy(0);
@@ -352,10 +360,10 @@ public abstract class Critter {
                     }
                 } else if (!Bfight && Afight) {
                     if (Critter.getRandomInt(challenger.energy) > 0) {
-                        challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+                        challenger.setEnergy((int) (challenger.getEnergy() + (.5 * enemy.getEnergy())));
                         enemy.setEnergy(0);
                     } else {
-                        enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+                        enemy.setEnergy((int) (enemy.getEnergy() + (.5 * challenger.getEnergy())));
                         challenger.setEnergy(0);
                     }
                 }
@@ -665,7 +673,7 @@ public abstract class Critter {
         System.out.println();
     }
 
-    /* the TestCritter class allows some critters to "cheat". If you want to
+    /** the TestCritter class allows some critters to "cheat". If you want to
      * create tests of your Critter model, you can create subclasses of this class
      * and then use the setter functions contained here.
      *

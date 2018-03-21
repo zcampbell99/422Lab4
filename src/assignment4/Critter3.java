@@ -2,26 +2,45 @@ package assignment4;
 
 public class Critter3 extends Critter {
     // Rabbit Critter
+
+    /**
+     * Override the toString from Critter to have the digit of Critter3
+     * @return a string with the number 3
+     */
     @Override
     public String toString() { return "3"; }
 
-    private static final int GENE_TOTAL = 24;
     private int dir;
     private boolean didRep;
 
+    /**
+     * Critter3 Constructor
+     * Set the direction randomly, set the start energy, and it has not reproduced yet
+     */
     public Critter3() {
         dir = Critter.getRandomInt(8);
         setEnergy(Params.start_energy);
         didRep = false;
     }
 
-    public boolean fight(String opponent) {
+    /**
+     * Determine whether or not the critter will fight the opponent or run
+     * @param not_used is the string of the opponent to fight
+     * @return true false if it wants to run away
+     */
+    public boolean fight(String not_used) {
         if (Critter.getRandomInt(10) <= 3) {
             return true;
         }
         return false;
     }
 
+    /**
+     * Overriding abstract Critter's doTimeStep()
+     * Critter3 is more likely to run than walk
+     * It reproduces every other step and reproduction doesn't take as much energy
+     * Reproduction requires less energy than normal
+     */
     @Override
     public void doTimeStep() {
         if (Critter.getRandomInt(10) <= 3) {                    // More likely to run than walk
