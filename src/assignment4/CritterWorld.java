@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class CritterWorld {
     protected static List<Critter> critterList = new ArrayList<>();
     protected static List<Critter> babyList = new ArrayList<>();
-    protected static List<Critter> algaeList = new ArrayList<>();
 
     public CritterWorld() {
     }

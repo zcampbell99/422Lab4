@@ -16,9 +16,7 @@ package assignment4;
 import java.awt.*;
 import java.io.InvalidClassException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 
@@ -239,56 +237,55 @@ public abstract class Critter {
 	public abstract void doTimeStep();
 	public abstract boolean fight(String opponent);
 
-	public void encounter() {
-		for (int i = 0; i < CritterWorld.critterList.size(); i++) {
-			Critter enemy = CritterWorld.critterList.get(i);
-			if (this.x_coord == enemy.x_coord && this.y_coord == enemy.y_coord) {
-				boolean Afight = true;
-				boolean Bfight = true;
-				if (!this.fight(enemy.toString())) {
-					Afight = false;
-					int walkDir = findAdjDir(x_coord, y_coord);
-					if (walkDir != -1)
-						this.walk(walkDir);
-				}
-				if (!enemy.fight(this.toString())) {
-					Bfight = false;
-					int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
-					if (walkDir != -1)
-						enemy.walk(walkDir);
-				}
-				if (this.getEnergy() > 0 && enemy.getEnergy() > 0 && this.x_coord == enemy.x_coord && this.y_coord == enemy.y_coord) {
-					if (Afight && Bfight) {
-						if (Critter.getRandomInt(this.energy) >= Critter.getRandomInt(enemy.getEnergy())) {		// Critter A wins
-							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
-							enemy.setEnergy(0);
-						} else {
-							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
-							this.setEnergy(0);
-						}
-					} else if (!Afight && Bfight) {
-						if (Critter.getRandomInt(enemy.getEnergy()) > 0) {
-							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
-							this.setEnergy(0);
-						} else {
-							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
-							enemy.setEnergy(0);
-						}
-					} else if (!Bfight && Afight) {
-						if (Critter.getRandomInt(this.energy) > 0) {
-							this.setEnergy((int)(this.getEnergy() + (.5*enemy.getEnergy())));
-							enemy.setEnergy(0);
-						} else {
-							enemy.setEnergy((int)(enemy.getEnergy() + (.5*this.getEnergy())));
-							this.setEnergy(0);
-						}
+	public static void encounter(LinkedList<Critter> stackOfCritters) {
+		for (int i = 0; i < stackOfCritters.size(); i++) {
+			Critter challenger = stackOfCritters.get(i);
+			Critter enemy = stackOfCritters.get(i+1);
+			boolean Afight = true;
+			boolean Bfight = true;
+			if (!challenger.fight(enemy.toString())) {
+				Afight = false;
+				int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
+				if (walkDir != -1)
+					challenger.walk(walkDir);
+			}
+			if (!enemy.fight(challenger.toString())) {
+				Bfight = false;
+				int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
+				if (walkDir != -1)
+					enemy.walk(walkDir);
+			}
+			if (challenger.getEnergy() > 0 && enemy.getEnergy() > 0 && challenger.x_coord == enemy.x_coord && challenger.y_coord == enemy.y_coord) {
+				if (Afight && Bfight) {
+					if (Critter.getRandomInt(challenger.energy) >= Critter.getRandomInt(enemy.getEnergy())) {		// Critter A wins
+						challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+						enemy.setEnergy(0);
+					} else {
+						enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+						challenger.setEnergy(0);
+					}
+				} else if (!Afight && Bfight) {
+					if (Critter.getRandomInt(enemy.getEnergy()) > 0) {
+						enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+						challenger.setEnergy(0);
+					} else {
+						challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+						enemy.setEnergy(0);
+					}
+				} else if (!Bfight && Afight) {
+					if (Critter.getRandomInt(challenger.energy) > 0) {
+						challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+						enemy.setEnergy(0);
+					} else {
+						enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+						challenger.setEnergy(0);
 					}
 				}
 			}
 		}
 	}
 
-	private int findAdjDir(int x_OG, int y_OG) {
+	private static int findAdjDir(int x_OG, int y_OG) {
 		int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
 		if (x_OG == Params.world_width-1 && y_OG == Params.world_height-1) {		// Bottom right corner
 			for (Critter crt : CritterWorld.critterList) {
@@ -513,11 +510,10 @@ public abstract class Critter {
                 //prepare critter for simulation, create initial position
                 critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
                 critter_instance.y_coord = getRandomInt(Params.world_height);
-//                critter_instance.oldCritPos = new Point(critter_instance.x_coord, critter_instance.y_coord);
-//                pop.addLast(critter_instance);
+////                critter_instance.oldCritPos = new Point(critter_instance.x_coord, critter_instance.y_coord);
+////                pop.addLast(critter_instance);
                 addToGrid(critter_instance);
                 CritterWorld.critterList.add(critter_instance);
-
             } else {
                 throw new InvalidCritterException(critter_class_name);
             }
@@ -627,11 +623,21 @@ public abstract class Critter {
 	public static void clearWorld() {		// Clear the critters and babies
 		CritterWorld.critterList.clear();
 		CritterWorld.babyList.clear();
-		CritterWorld.algaeList.clear();
 	}
 	
 	public static void worldTimeStep() {
-		// Complete this method.
+		for (Critter c : CritterWorld.critterList) {								// Move every critter
+			c.doTimeStep();
+		}
+		for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {			// Resolve all encounters
+			if (c.getValue().size() > 1) {
+				encounter(c.getValue());
+			}
+		}
+		for (Critter c : CritterWorld.babyList) {
+			CritterWorld.critterList.add(c);
+		}
+		CritterWorld.babyList.clear();
 	}
 	
 	public static void displayWorld() {
