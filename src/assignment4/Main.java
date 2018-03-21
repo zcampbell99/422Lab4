@@ -104,14 +104,14 @@ public class Main {
             return input;   //input remains empty if user inputs quit
         }
         else {
-            input.add(command[0]);
-        }if (command[0].equals(show)) { //input was "show" command
+            input.add(first);
+        }if (first.equals(show)) { //input was "show" command
             if(command.length == 1){
                 Critter.displayWorld();
             }else{
                 System.out.println("Error processing: " + s);
             }
-        }else if (command[0].equals(step)) {    //input was "step" command
+        }else if (first.equals(step)) {    //input was "step" command
             if(command.length == 1){
                 Critter.worldTimeStep();
             }else if(command.length==2){    //step command has <count>
@@ -124,7 +124,7 @@ public class Main {
                     System.out.println("Error processing: " + s);
                 }
             }
-        } else if (command[0].equals(make)) {   //input was "make" command
+        } else if (first.equals(make)) {   //input was "make" command
             if(command.length == 2) {   //make a single critter of specified class
                 try {
                     Critter.makeCritter(command[1]);
@@ -148,7 +148,7 @@ public class Main {
             }else{
                 System.out.println("error processing: " + s);
             }
-        }else if(command.equals(seed)){ //input was "seed" command
+        }else if(first.equals(seed)){ //input was "seed" command
             if(command.length == 2) {
                 try {
                     long thisSeed = Long.valueOf(command[1]);
@@ -160,7 +160,7 @@ public class Main {
             }else {
                 System.out.println("error processing: " + s);
             }
-        }else if(command.equals(stats)) {   //input was "stats" command
+        }else if(first.equals(stats)) {   //input was "stats" command
             if(command.length == 2) {
                 try {
                     String critter_class_name = command[1];

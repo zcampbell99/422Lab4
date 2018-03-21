@@ -1,15 +1,12 @@
 package assignment4;
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
- * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Zack Campbell
+ * zcc254
+ * Audrey Gan
+ * ayg333
  * Slip days used: <0>
- * Fall 2016
+ * Spring 2018
  */
 
 
@@ -45,7 +42,6 @@ public abstract class Critter {
 	public static void setSeed(long new_seed) {
 		rand = new java.util.Random(new_seed);
 	}
-	
 	
 	/* a one-character long string that visually depicts your critter in the ASCII interface */
 	public String toString() { return ""; }
@@ -507,13 +503,11 @@ public abstract class Critter {
             Class<?> critter = Class.forName(myPackage + ".Critter");
             if (critter.isAssignableFrom(critter_class)) {
                 Critter critter_instance = (Critter) critter_class.newInstance();    //IllegalAcessException if no nullary constructor
-                //prepare critter for simulation, create initial position
+                // Set critter's initial position
                 critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
                 critter_instance.y_coord = getRandomInt(Params.world_height);
-////                critter_instance.oldCritPos = new Point(critter_instance.x_coord, critter_instance.y_coord);
-////                pop.addLast(critter_instance);
-                addToGrid(critter_instance);
-                CritterWorld.critterList.add(critter_instance);
+                addToGrid(critter_instance);        // critter is added to the adult critter list
+                CritterWorld.critterList.add(critter_instance);         // critter is added to the grid
             } else {
                 throw new InvalidCritterException(critter_class_name);
             }
@@ -536,10 +530,22 @@ public abstract class Critter {
 	 * @throws InvalidCritterException
 	 */
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
-		List<Critter> result = new java.util.ArrayList<Critter>();
-	
-		return result;
-	}
+        List<Critter> result = new java.util.ArrayList<Critter>();
+        try{
+            Class<?> critter_class = Class.forName(myPackage + "." +critter_class_name);
+            Class<?> critter = Class.forName(myPackage + ".Critter");
+            if(critter.isAssignableFrom(critter_class)) {
+                for(Critter crit : CritterWorld.critterList) {
+                    if(critter_class.equals(crit.getClass()) || crit.getClass().isInstance(critter_class)){
+                        result.add(crit);
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            throw new InvalidCritterException(critter_class_name); //case when critter_class doesn't even exist
+        }
+        return result;
+    }
 	
 	/**
 	 * Prints out how many Critters of each type there are on the board.
@@ -623,9 +629,26 @@ public abstract class Critter {
 	public static void clearWorld() {		// Clear the critters and babies
 		CritterWorld.critterList.clear();
 		CritterWorld.babyList.clear();
+		grid.clear();
 	}
-	
-	public static void worldTimeStep() {
+
+    public static void clearDead(){
+        Iterator<Critter> iterCrit = CritterWorld.critterList.iterator();
+        while(iterCrit.hasNext()) {
+            if(!isAlive(iterCrit.next())) {
+                iterCrit.remove();
+            }
+        }
+    }
+
+    private static boolean isAlive(Critter crit) {
+        if(crit.energy <= 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public static void worldTimeStep() {
 		for (Critter c : CritterWorld.critterList) {								// Move every critter
 			c.doTimeStep();
 		}
