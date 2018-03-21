@@ -39,7 +39,7 @@ public class Critter3 extends Critter {
      * Overriding abstract Critter's doTimeStep()
      * Critter3 is more likely to run than walk
      * It reproduces every other step and reproduction doesn't take as much energy
-     * Reproduction requires less energy than
+     * Reproduction requires less energy than normal
      */
     @Override
     public void doTimeStep() {
@@ -51,7 +51,7 @@ public class Critter3 extends Critter {
             run(dir);
             Params.run_energy_cost = temp;
         }
-        if (this.getEnergy() >= Params.min_reproduce_energy/2 && !didRep) {
+        if (this.getEnergy() >= 25 && !didRep) {
             didRep = true;
             Critter3 child = new Critter3();
             setEnergy(getEnergy()+(getEnergy()/4));
