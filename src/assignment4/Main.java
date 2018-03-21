@@ -178,21 +178,7 @@ public class Main {
                             runs.invoke(null,listOfCrits);
                         }
                     }
-                } catch (InvalidCritterException e) {
-                    System.out.println("error processing: " + s);
-                } catch (NoSuchMethodException e) {
-                    System.out.println("error processing: " + s);
-                } catch (SecurityException e) {
-                    System.out.println("error processing: " + s);
-                } catch (IllegalAccessException e) {
-                    System.out.println("error processing: " + s);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("error processing: " + s);
-                } catch (InvocationTargetException e) {
-                    System.out.println("error processing: " + s);
-                } catch (ClassNotFoundException e) {
-                    System.out.println("error processing: " + s);
-                } catch (NoClassDefFoundError e) {
+                } catch (InvalidCritterException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException | NoClassDefFoundError e) {
                     System.out.println("error processing: " + s);
                 }
             }else{
