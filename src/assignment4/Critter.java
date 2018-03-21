@@ -29,6 +29,7 @@ public abstract class Critter {
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
 	private static HashMap<Point, LinkedList<Critter>> grid = new HashMap<Point, LinkedList<Critter>>();
     private static boolean initialMove;
+    private static int numMoves;
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -85,7 +86,10 @@ public abstract class Critter {
             energy -= Params.run_energy_cost;
         if(numofmoves == 1 && isAlive(this)) {
             Point prev_pos = new Point(x_coord, y_coord);
-            walk(direction);
+            int stepCount = 0;
+            while (stepCount < steps) {
+            	walk(direction);
+			}
             Point new_pos = new Point(x_coord, y_coord);
 
             if(initialMove) {	//if called in fight()
@@ -186,9 +190,7 @@ public abstract class Critter {
     }  // Accounts for going out of bounds
 
 	protected final void run(int direction) {
-		walk(direction);
-		walk(direction);
-		this.energy -= Params.run_energy_cost - (2*Params.walk_energy_cost);
+		updateLoc(direction, 2, ++numMoves);
     }  // Calls "walk" twice
 
 	protected final void reproduce(Critter offspring, int direction) {
@@ -288,13 +290,13 @@ public abstract class Critter {
                 Afight = false;
                 int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
                 if (walkDir != -1)
-                    challenger.walk(walkDir);
+                    challenger.updateLoc(walkDir, 1, ++numMoves);
             }
             if (!enemy.fight(challenger.toString())) {
                 Bfight = false;
                 int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
                 if (walkDir != -1)
-                    enemy.walk(walkDir);
+                    enemy.updateLoc(walkDir, 1, ++numMoves);
             }
             if (challenger.getEnergy() > 0 && enemy.getEnergy() > 0 && challenger.x_coord == enemy.x_coord && challenger.y_coord == enemy.y_coord) {
                 if (Afight && Bfight) {
@@ -762,12 +764,5 @@ public abstract class Critter {
 	        crit.add(critter_instance);
 	        grid.put(critpos,crit);
         }
-    }
-
-    private static boolean isAlive(Critter crit) {
-        if(crit.energy <= 0) {
-            return false;
-        }
-        return true;
     }
 }
