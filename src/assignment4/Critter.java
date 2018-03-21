@@ -507,6 +507,8 @@ public abstract class Critter {
                 critter_instance.x_coord = getRandomInt(Params.world_width);    //set position with constrained randomizer
                 critter_instance.y_coord = getRandomInt(Params.world_height);
                 addToGrid(critter_instance);        // critter is added to the adult critter list
+				if (critter_class_name.equals("Algae"))
+					CritterWorld.numAlgae++;
                 CritterWorld.critterList.add(critter_instance);         // critter is added to the grid
             } else {
                 throw new InvalidCritterException(critter_class_name);
@@ -637,6 +639,8 @@ public abstract class Critter {
         while(iterCrit.hasNext()) {
         	Critter c = iterCrit.next();
             if(!isAlive(c)) {
+            	if (c.toString().equals("@"))
+            		CritterWorld.numAlgae--;
             	Point p = new Point(c.x_coord, c.y_coord);
             	for (int i = 0; i < grid.get(p).size(); i++) {
             		if (grid.get(p).get(i) == c) {
