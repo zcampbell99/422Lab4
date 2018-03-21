@@ -107,8 +107,7 @@ public abstract class Critter {
                 }
                 if(grid.containsKey(new_pos)) {
                     grid.get(new_pos).add(this); //add to arraylist if position already has a critter
-                }
-                else {
+                } else {
                     LinkedList<Critter> newLoc = new LinkedList<Critter>();
                     newLoc.add(this);
                     grid.put(new_pos, newLoc); //create new key with an arraylist of the 1 critter
@@ -792,7 +791,7 @@ public abstract class Critter {
         Point critpos = new Point(critter_instance.x_coord, critter_instance.y_coord);
         if(grid.containsKey(critpos)){
             grid.get(critpos).add(critter_instance);    //if the position is already occupied on the grid, just add critter to list of critters in position
-        }else{
+        } else {
             LinkedList<Critter> crit = new LinkedList<Critter>();   //if the position is empty, add the position and critter to the grid
             crit.add(critter_instance);
             grid.put(critpos,crit);
