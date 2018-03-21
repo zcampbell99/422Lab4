@@ -100,7 +100,7 @@ public class Main {
         String make = "make";
         String seed = "seed";
         String stats = "stats";
-        String first = command[0].toLowerCase();
+        String first = command[0];
         if (first.equals(quit)) {         //return empty array if user inputs "/quit"
             return input;   //input remains empty if user inputs quit
         }
@@ -110,7 +110,7 @@ public class Main {
             if(command.length == 1){
                 Critter.displayWorld();
             }else{
-                System.out.println("Error processing: " + s);
+                System.out.println("error processing: " + s);
             }
         }else if (first.equals(step)) {    //input was "step" command
             if(command.length == 1){
@@ -122,7 +122,7 @@ public class Main {
                         Critter.worldTimeStep();
                 }
                 catch(NumberFormatException e) {
-                    System.out.println("Error processing: " + s);
+                    System.out.println("error processing: " + s);
                 }
             }
         } else if (first.equals(make)) {   //input was "make" command
@@ -131,7 +131,7 @@ public class Main {
                     Critter.makeCritter(command[1]);
                 }
                 catch(InvalidCritterException e) {
-                    System.out.println("Error processing: " + s);
+                    System.out.println("error processing: " + s);
                 }
             }
             else if(command.length == 3) {  //make <count> number of critters of specified class
@@ -141,13 +141,13 @@ public class Main {
                         Critter.makeCritter(command[1]);
                 }
                 catch(NumberFormatException e) {
-                    System.out.println("Error processing: " + s);
+                    System.out.println("error processing: " + s);
                 }
                 catch(InvalidCritterException e) {
-                    System.out.println("Error processing: " + s);
+                    System.out.println("error processing: " + s);
                 }
             }else{
-                System.out.println("Error processing: " + s);
+                System.out.println("error processing: " + s);
             }
         }else if(first.equals(seed)){ //input was "seed" command
             if(command.length == 2) {
@@ -156,10 +156,10 @@ public class Main {
                     Critter.setSeed(thisSeed);
                 }
                 catch(NumberFormatException e) {
-                    System.out.println("Error processing: " + s);
+                    System.out.println("error processing: " + s);
                 }
             }else {
-                System.out.println("Error processing: " + s);
+                System.out.println("error processing: " + s);
             }
         }else if(first.equals(stats)) {   //input was "stats" command
             if(command.length == 2) {
@@ -182,12 +182,12 @@ public class Main {
                     System.out.println("error processing: " + s);
                 }
             }else{
-                System.out.println("Error processing: " + s);
+                System.out.println("error processing: " + s);
             }
         }else{
-            System.out.println("Invalid Command " + s);
+            System.out.println("invalid command: " + s);
         }
-        System.out.println("Input: " + s);
+//        System.out.println("Input: " + s);
         return input;
     }
 }
