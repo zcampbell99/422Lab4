@@ -30,6 +30,7 @@ public abstract class Critter {
     private int y_coord;
     private int numMoves = 0; //for walk/run
     private static boolean afterInitialMove;
+    public static int repCount = 0;
 
     // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
     static {
@@ -430,7 +431,12 @@ public abstract class Critter {
             }
         }
         allCritters.addAll(babies); // all babies are now adults
-        for(Critter crit : babies) addToGrid(crit);	// move all babies onto grid
+        for(Critter crit : babies) {
+            if (crit.toString().equals("3")) {
+                repCount++;
+            }
+            addToGrid(crit);	// move all babies onto grid
+        }
         babies.clear();	// clear the babies array for next time-step
         clearDead(); // clear all dead critters
     }
