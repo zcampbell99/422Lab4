@@ -25,8 +25,11 @@ public abstract class Critter {
     private static List<Critter> babies = new java.util.ArrayList<Critter>();
     private static LinkedList<Critter> allCritters = new LinkedList<Critter>();
     private static HashMap<Point, LinkedList<Critter>> grid = new HashMap<Point, LinkedList<Critter>>();
-    private static boolean initialMove;
     private static int timestep = 0;
+    private int x_coord;
+    private int y_coord;
+    private int numMoves = 0; //for walk/run
+    private static boolean afterInitialMove;
 
     // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
     static {
@@ -51,10 +54,6 @@ public abstract class Critter {
     protected void setEnergy(int e) {
         this.energy = e;
     }
-
-    private int x_coord;
-    private int y_coord;
-    private int numMoves = 0; //for walk/run
 
     protected int getX() {
         return x_coord;
@@ -410,17 +409,15 @@ public abstract class Critter {
         grid.clear();
     }
 
-    private static boolean afterInitialMove;
-
     /**
      * Has all the critters do doTimeStep and resolve any encounters.
      * Updates all critter states and clears the dead. Replenishes Algae.
      */
     public static void worldTimeStep() {
         timestep++;
-        afterInitialMove = false;   // for running away during a fight
+        afterInitialMove = false;   // To check if critter moved before the encounter
         for(Critter crit : allCritters) {
-            crit.numMoves = 0;      //for walk/run
+            crit.numMoves = 0;      // So that each critter has the opportunity to move
             crit.doTimeStep();
         }
         doEncounter();              // After all critters move, do encounters
@@ -437,7 +434,6 @@ public abstract class Critter {
         babies.clear();	// clear the babies array for next time-step
         clearDead(); // clear all dead critters
     }
-
 
     /**
      * Decides the outcome of any critters who come into contact (occupy the same position) on the grid
@@ -511,6 +507,34 @@ public abstract class Critter {
     }
 
     /**
+     * Prints a display of the grid world into console
+     */
+    public static void displayWorld() {
+        for (int i = 0; i < Params.world_height + 2; i++) {
+            for (int j = 0; j < Params.world_width + 2; j++) {
+                if (i == 0 || i == Params.world_height + 1) {
+                    if (j == 0 || j == Params.world_width + 1)
+                        System.out.print("+");
+                    else
+                        System.out.print("-");
+                } else if (j == 0 || j == Params.world_width + 1)
+                    System.out.print("|");
+                else {
+                    Point p = new Point(i - 1, j - 1);
+                    if (grid.containsKey(p)) {
+                        LinkedList<Critter> ac = grid.get(p);   //finds the critter at this point to display
+                        if (ac.size() >= 1) {
+                            System.out.print(ac.get(0).toString()); //gets the first critter that was at this point to print
+                        }
+                    } else
+                        System.out.print(" ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    /**
      * class for a 2D point for the grid of critters
      **/
     private static class Point {
@@ -538,35 +562,6 @@ public abstract class Critter {
         @Override
         public int hashCode() {
             return Objects.hash(x,y);
-        }
-    }
-
-
-    /**
-     * Prints a display of the grid world into console
-     */
-    public static void displayWorld() {
-        for (int i = 0; i < Params.world_height + 2; i++) {
-            for (int j = 0; j < Params.world_width + 2; j++) {
-                if (i == 0 || i == Params.world_height + 1) {
-                    if (j == 0 || j == Params.world_width + 1)
-                        System.out.print("+");
-                    else
-                        System.out.print("-");
-                } else if (j == 0 || j == Params.world_width + 1)
-                    System.out.print("|");
-                else {
-                    Point p = new Point(i - 1, j - 1);
-                    if (grid.containsKey(p)) {
-                        LinkedList<Critter> ac = grid.get(p);   //finds the critter at this point to display
-                        if (ac.size() >= 1) {
-                            System.out.print(ac.get(0).toString()); //gets the first critter that was at this point to print
-                        }
-                    } else
-                        System.out.print(" ");
-                }
-            }
-            System.out.println();
         }
     }
 }
