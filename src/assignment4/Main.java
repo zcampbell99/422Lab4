@@ -87,7 +87,7 @@ public class Main {
 
     /**
      * Takes in user input as commands and does the appropriate actions
-     * @param keyboard
+     * @param keyboard is the scanned input
      * @return input array which determines if user input "quit"
      */
     // Testing committing

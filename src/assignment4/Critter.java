@@ -209,8 +209,8 @@ public abstract class Critter {
      * (Java weirdness: Exception throwing does not work properly if the parameter has lower-case instead of
      * upper. For example, if craig is supplied instead of Craig, an error is thrown instead of
      * an Exception.)
-     * @param critter_class_name
-     * @throws InvalidCritterException
+     * @param critter_class_name is the string version of the critter's Class
+     * @throws InvalidCritterException if the class does not exist
      */
     public static void makeCritter(String critter_class_name) throws InvalidCritterException {
         critter_class_name = critter_class_name.trim(); //get rid of any whitespace
@@ -264,9 +264,9 @@ public abstract class Critter {
 
     /**
      * Gets a list of critters of a specific type.
-     * @param critter_class_name What kind of Critter is to be listed.  Unqualified class name.
+     * @param critter_class_name is what kind of Critter is to be listed
      * @return List of Critters.
-     * @throws InvalidCritterException
+     * @throws InvalidCritterException if the class does not exist
      */
     public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
         List<Critter> result = new java.util.ArrayList<Critter>();
