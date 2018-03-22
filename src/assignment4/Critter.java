@@ -232,9 +232,6 @@ public abstract class Critter {
                 critter_instance.x_coord = getRandomInt(Params.world_width);
                 critter_instance.y_coord = getRandomInt(Params.world_height); //set position
                 critter_instance.energy = Params.start_energy;
-                if(critter_class_name.equals("Algae")){
-                    CritterWorld.numAlgae++;
-                }
                 allCritters.addLast(critter_instance);
                 addToGrid(critter_instance);
             } else

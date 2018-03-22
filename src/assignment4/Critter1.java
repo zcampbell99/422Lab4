@@ -1,3 +1,13 @@
+/* CRITTERS Critter1.java
+ * EE422C Project 4 submission by
+ * Zack Campbell
+ * zcc254
+ * Audrey Gan
+ * ayg333
+ * Slip days used: <0>
+ * Spring 2018
+ */
+
 package assignment4;
 
 public class Critter1 extends Critter {
