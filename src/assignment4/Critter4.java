@@ -6,15 +6,19 @@ public class Critter4 extends Critter {
     @Override
     public String toString() { return "4"; }
 
+    private static final int GENE_TOTAL = 24;
+    private int[] genes = new int[8];
     private int dir;
-    private boolean moved = false;
 
     /**
-     * Critter4 constructor
+     * Critter4 Constructor
+     * Set the direction randomly, set the start energy, and it has not reproduced yet
      */
     public Critter4() {
+        for (int k = 0; k < 8; k += 1) {
+            genes[k] = GENE_TOTAL / 8;
+        }
         dir = Critter.getRandomInt(8);
-        setEnergy(Params.start_energy);
     }
 
     /**
@@ -55,5 +59,24 @@ public class Critter4 extends Critter {
             Critter4 child = new Critter4();
             reproduce(child, Critter.getRandomInt(8));
         }
+    }
+    public static void runStats(java.util.List<Critter> critter4) {
+        int total_straight = 0;
+        int total_left = 0;
+        int total_right = 0;
+        int total_back = 0;
+        for (Object obj : critter4) {
+            Critter4 c = (Critter4) obj;
+            total_straight += c.genes[0];
+            total_right += c.genes[1] + c.genes[2] + c.genes[3];
+            total_back += c.genes[4];
+            total_left += c.genes[5] + c.genes[6] + c.genes[7];
+        }
+        System.out.print("" + critter4.size() + " total Critter4    ");
+        System.out.print("" + total_straight / (GENE_TOTAL * 0.01 * critter4.size()) + "% straight   ");
+        System.out.print("" + total_back / (GENE_TOTAL * 0.01 * critter4.size()) + "% back   ");
+        System.out.print("" + total_right / (GENE_TOTAL * 0.01 * critter4.size()) + "% right   ");
+        System.out.print("" + total_left / (GENE_TOTAL * 0.01 * critter4.size()) + "% left   ");
+        System.out.println();
     }
 }
