@@ -57,7 +57,7 @@ public abstract class Critter {
 
     private int x_coord;
     private int y_coord;
-    private int numMoves = 0;
+    private static int numMoves = 0;
 
     protected int getX() {
         return x_coord;
@@ -284,10 +284,9 @@ public abstract class Critter {
      * Decides the outcome of two critters who come into contact on the grid (run away or fight)
      * @param stackOfCritters is the critters who appear at the same location on the grid
      */
-    public static void encounter(LinkedList<Critter> stackOfCritters) {
+    public static void encounter(List<Critter> stackOfCritters) {
         initialMove = true;
-        while(stackOfCritters.size()>1){
-            int i = 0;
+        for (int i = 0; i+1<stackOfCritters.size(); i++) {
             Critter challenger = stackOfCritters.get(i);
             Critter enemy = stackOfCritters.get(i+1);
             boolean Afight = true;
@@ -314,47 +313,39 @@ public abstract class Critter {
                     }
             }
             if (challenger.getEnergy() > 0 && enemy.getEnergy() > 0 && challenger.x_coord == enemy.x_coord && challenger.y_coord == enemy.y_coord) {
-                if(enemy.toString().equals("1")){
-                    int winEnergy = (challenger.getEnergy()/2);
-                    enemy.setEnergy(((enemy.getEnergy()*2)/3)+winEnergy); //elephant loses a third of their energy but gains half of opponent's energy
-                    challenger.setEnergy(0); //opponent is defeated
-                }else if(challenger.toString().equals("1")){
+                if(challenger.toString().equals("1")){
                     int winEnergy = (enemy.getEnergy()/2);
                     challenger.setEnergy(((challenger.getEnergy()*2)/3)+winEnergy); //elephant loses a third of their energy but gains half of opponent's energy
                     enemy.setEnergy(0); //opponent is defeated
-                } else if (Afight && Bfight){
-                    if (Critter.getRandomInt(challenger.energy) >= Critter.getRandomInt(enemy.getEnergy())) {    // Critter A wins
-                        challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
-                        enemy.setEnergy(0);
-                    } else {
-                        enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
-                        challenger.setEnergy(0);
-                    }
-                } else if (!Afight && Bfight) {
-                    if (Critter.getRandomInt(enemy.getEnergy()) > 0) {
-                        enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
-                        challenger.setEnergy(0);
-                    } else {
-                        challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
-                        enemy.setEnergy(0);
-                    }
-                } else if (!Bfight && Afight) {
-                    if (Critter.getRandomInt(challenger.energy) > 0) {
-                        challenger.setEnergy((int) (challenger.getEnergy() + (.5 * enemy.getEnergy())));
-                        enemy.setEnergy(0);
-                    } else {
-                        enemy.setEnergy((int) (enemy.getEnergy() + (.5 * challenger.getEnergy())));
-                        challenger.setEnergy(0);
-                    }
+                    Critter temp = challenger;
+                    stackOfCritters.set(i, enemy);
+                    stackOfCritters.set(i+1, temp);
+                } else if (Critter.getRandomInt(challenger.energy) >= Critter.getRandomInt(enemy.getEnergy())) {    // Critter A wins
+                    challenger.setEnergy((int)(challenger.getEnergy() + (.5*enemy.getEnergy())));
+                    enemy.setEnergy(0);
+                    Critter temp = challenger;
+                    stackOfCritters.set(i, enemy);
+                    stackOfCritters.set(i+1, temp);
+                } else {
+                    enemy.setEnergy((int)(enemy.getEnergy() + (.5*challenger.getEnergy())));
+                    challenger.setEnergy(0);
                 }
-            }if(!isAlive(challenger)){  //remove dead critters from grid and critterList
-                stackOfCritters.remove(challenger);
-                CritterWorld.critterList.remove(challenger);
-            }if(!isAlive(enemy)){
-                stackOfCritters.remove(enemy);
-                CritterWorld.critterList.remove(enemy);
+
+            } else if (challenger.getEnergy() > 0 && enemy.getEnergy() <= 0) {
+                Critter temp = challenger;
+                stackOfCritters.set(i, enemy);
+                stackOfCritters.set(i+1, temp);
             }
+//            if(!isAlive(challenger)){  //remove dead critters from grid and critterList
+//                stackOfCritters.remove(challenger);
+//                CritterWorld.critterList.remove(challenger);
+//            }
+//            if(!isAlive(enemy)){
+//                stackOfCritters.remove(enemy);
+//                CritterWorld.critterList.remove(enemy);
+//            }
         }
+        stackOfCritters.clear();
     }
 
     /**
@@ -725,10 +716,14 @@ public abstract class Critter {
      * Clear the critter list and grid of all dead critters
      */
     public static void clearDead() {
-        Iterator<Critter> it = CritterWorld.critterList.iterator();
+        Iterator<Map.Entry<Point, LinkedList<Critter>>> it = grid.entrySet().iterator();
         while(it.hasNext()) {
-            if(!isAlive(it.next())) {
-                it.remove();
+            LinkedList<Critter> stackedList = it.next().getValue();
+            Iterator<Critter> critIter = stackedList.iterator();
+            while (critIter.hasNext()) {
+                if(!isAlive(critIter.next())) {
+                    critIter.remove();
+                }
             }
         }
     }
@@ -739,21 +734,40 @@ public abstract class Critter {
     public static void worldTimeStep() {
         initialMove = false;
         for (Critter c : CritterWorld.critterList) {                // Move every critter
-            c.numMoves = 0;
             c.doTimeStep();
-
+            c.numMoves = 0;
         }
-        for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {      // Resolve all encounters
-            if (c.getValue().size() > 1) {
-                encounter(c.getValue());
+        List<Critter> stackedCrit = new ArrayList<>();
+        for (Critter c : CritterWorld.critterList) {
+            stackedCrit.add(c);
+            for (Critter c2 : CritterWorld.critterList) {
+                if (c == c2)
+                    continue;
+                else if (c.x_coord == c2.x_coord && c.y_coord == c2.y_coord)
+                    stackedCrit.add(c2);
+            }
+            if (stackedCrit.size() > 1)
+                encounter(stackedCrit);
+            else
+                stackedCrit.clear();
+        }
+        ListIterator<Critter> deadCheck = CritterWorld.critterList.listIterator();
+        while (deadCheck.hasNext()) {
+            if (deadCheck.next().getEnergy() <= 0) {
+                deadCheck.remove();
             }
         }
+//        for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {      // Resolve all encounters
+//            if (c.getValue().size() > 1) {
+//                encounter(c.getValue());
+//            }
+//        }
         for (Critter c : CritterWorld.babyList) {                  // Babies are now adults
             CritterWorld.critterList.add(c);
         }
         CritterWorld.babyList.clear();                        // Clear the dead
-        clearDead();
-        for (int i = 0; i < Params.refresh_algae_count; i++) {  // Refresh algae
+        //clearDead();
+        for (int i = CritterWorld.numAlgae; i < Params.refresh_algae_count; i++) {  // Refresh algae
             try {
                 makeCritter("Algae");
             } catch (InvalidCritterException e) {
