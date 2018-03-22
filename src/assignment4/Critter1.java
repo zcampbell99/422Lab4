@@ -20,8 +20,8 @@ public class Critter1 extends Critter {
 
     /**
      * Overriding abstract Critter's doTimeStep()
-     * Can only walk one space or stand still
-     * Loses half as much energy as normal by walking and standing
+     * Can only walk one space or stand still with 50% chance
+     * Loses half as much energy as normal when walking
      * Wins every fight but it takes 1/3 of it’s starting energy to do so
      */
     @Override
@@ -31,8 +31,6 @@ public class Critter1 extends Critter {
         if(doesMove <= 4){ //only moves with 50% chance
             walk(dir);
             this.setEnergy(this.getEnergy()+(Params.walk_energy_cost/2));    //loses half as much energy as usual when walking
-        }else{
-            this.setEnergy(this.getEnergy()-(Params.rest_energy_cost/2));    //loses half as much energy as usual when resting
         }
 
         if (getEnergy() > 150) {
@@ -74,6 +72,7 @@ public class Critter1 extends Critter {
             total_left += c.genes[5] + c.genes[6] + c.genes[7];
         }
         System.out.print("" + critter1.size() + " total Critter1    ");
+        System.out.print("" + critter1Wins + " total Critter1 wins    ");
         System.out.print("" + total_straight / (GENE_TOTAL * 0.01 * critter1.size()) + "% straight   ");
         System.out.print("" + total_back / (GENE_TOTAL * 0.01 * critter1.size()) + "% back   ");
         System.out.print("" + total_right / (GENE_TOTAL * 0.01 * critter1.size()) + "% right   ");
