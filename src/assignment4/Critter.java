@@ -91,27 +91,30 @@ public abstract class Critter {
             move(direction, steps, this);
             Point new_pos = new Point(x_coord, y_coord);
             if(initialMove) {	//if called in fight()
-                for(Map.Entry<Point, LinkedList<Critter>> entry : grid.entrySet()) { // iterate through each occupied position
-                    if(new_pos.equals(new Point(entry.getKey().x, entry.getKey().y))) {
-                        new_pos = prev_pos;  // if the position is already occupied by a critter don't move this one
-                        break;
-                    }
-                }
+                x_coord = prev_pos.x;
+                y_coord = prev_pos.y;
+                return;
+// for(Map.Entry<Point, LinkedList<Critter>> entry : grid.entrySet()) { // iterate through each occupied position
+//                    if(new_pos.equals(new Point(entry.getKey().x, entry.getKey().y))) {
+//                        new_pos = prev_pos;  // if the position is already occupied by a critter don't move this one
+//                        break;
+//                    }
+//                }
             }
-            if(!new_pos.equals(prev_pos)) {
-                LinkedList<Critter> oldLoc = grid.get(prev_pos);
-                oldLoc.remove(this);
-                if(oldLoc.size() == 0) {
-                    grid.remove(prev_pos);
-                }
-                if(grid.containsKey(new_pos)) {
-                    grid.get(new_pos).add(this); //add to arraylist if position already has a critter
-                } else {
-                    LinkedList<Critter> newLoc = new LinkedList<Critter>();
-                    newLoc.add(this);
-                    grid.put(new_pos, newLoc); //create new key with an arraylist of the 1 critter
-                }
-            }
+//            if(!new_pos.equals(prev_pos)) {
+//                LinkedList<Critter> oldLoc = grid.get(prev_pos);
+//                oldLoc.remove(this);
+//                if(oldLoc.size() == 0) {
+//                    grid.remove(prev_pos);
+//                }
+//                if(grid.containsKey(new_pos)) {
+//                    grid.get(new_pos).add(this); //add to arraylist if position already has a critter
+//                } else {
+//                    LinkedList<Critter> newLoc = new LinkedList<Critter>();
+//                    newLoc.add(this);
+//                    grid.put(new_pos, newLoc); //create new key with an arraylist of the 1 critter
+//                }
+//            }
             x_coord = new_pos.x; y_coord = new_pos.y; // change the critter position to the new position
         }
     }
@@ -332,13 +335,13 @@ public abstract class Critter {
                 stackOfCritters.set(i, enemy);
                 stackOfCritters.set(i+1, temp);
             }
-//            if(!isAlive(challenger)){  //remove dead critters from grid and critterList
+//            if(!isAlive(challenger)){  //remove dead critters from grid and population
 //                stackOfCritters.remove(challenger);
-//                CritterWorld.critterList.remove(challenger);
+//                population.remove(challenger);
 //            }
 //            if(!isAlive(enemy)){
 //                stackOfCritters.remove(enemy);
-//                CritterWorld.critterList.remove(enemy);
+//                population.remove(enemy);
 //            }
         }
         stackOfCritters.clear();
@@ -353,7 +356,7 @@ public abstract class Critter {
     private static int findAdjDir(int x_OG, int y_OG) {
         int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
         if (x_OG == Params.world_width-1 && y_OG == Params.world_height-1) {		// Bottom right corner
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == 0 && crt.y_coord == Params.world_height-2)
                     h = 1;
                 if (crt.x_coord == 0 && crt.y_coord == Params.world_height-1)
@@ -373,7 +376,7 @@ public abstract class Critter {
             }
         }
         if (x_OG == Params.world_width-1 && y_OG == 0) {							// Top right corner
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == 0 && crt.y_coord == 1)
                     b = 1;
                 if (crt.x_coord == 0 && crt.y_coord == Params.world_height-1)
@@ -393,7 +396,7 @@ public abstract class Critter {
             }
         }
         if (x_OG == 0 && y_OG == 0) {												// Top left corner
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == 1 && crt.y_coord == 1)
                     b = 1;
                 if (crt.x_coord == 1 && crt.y_coord == Params.world_height-1)
@@ -413,7 +416,7 @@ public abstract class Critter {
             }
         }
         if (x_OG == 0 && y_OG == Params.world_height-1) {						// Bottom left corner
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == 1 && crt.y_coord == 0)
                     b = 1;
                 if (crt.x_coord == 1 && crt.y_coord == Params.world_height-2)
@@ -433,7 +436,7 @@ public abstract class Critter {
             }
         }
         if (y_OG == 0 && x_OG != 0 && x_OG != Params.world_width-1) {					// Top edge
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == x_OG+1 && crt.y_coord == 1)
                     b = 1;
                 if (crt.x_coord == x_OG-1 && crt.y_coord == 1)
@@ -453,7 +456,7 @@ public abstract class Critter {
             }
         }
         if (y_OG == Params.world_height-1 && x_OG != 0 && x_OG != Params.world_width-1) {		// Bottom edge
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == x_OG+1 && crt.y_coord == 0)
                     b = 1;
                 if (crt.x_coord == x_OG-1 && crt.y_coord == 0)
@@ -473,7 +476,7 @@ public abstract class Critter {
             }
         }
         if (x_OG == 0 && y_OG != 0 && y_OG != Params.world_height-1) {		// Left edge
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == 1 && crt.y_coord == y_OG)
                     a = 1;
                 if (crt.x_coord == Params.world_width-1 && crt.y_coord == y_OG)
@@ -493,7 +496,7 @@ public abstract class Critter {
             }
         }
         if (x_OG == Params.world_width-1 && y_OG != 0 && y_OG != Params.world_height-1) {		// Right edge
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == Params.world_width-2 && crt.y_coord == y_OG)
                     e = 1;
                 if (crt.x_coord == 0 && crt.y_coord == y_OG)
@@ -513,7 +516,7 @@ public abstract class Critter {
             }
         }
         if (x_OG != 0 && x_OG != Params.world_width-1 && y_OG != 0 && y_OG != Params.world_height-1) {		// In the middle
-            for (Critter crt : CritterWorld.critterList) {
+            for (Critter crt : population) {
                 if (crt.x_coord == x_OG+1 && crt.y_coord == y_OG)
                     a = 1;
                 if (crt.x_coord == x_OG-1 && crt.y_coord == y_OG)
@@ -579,9 +582,8 @@ public abstract class Critter {
                 if(critter_class_name.equals("Algae")){
                     CritterWorld.numAlgae++;
                 }
-                CritterWorld.critterList.add(critter_instance); //critter is added to the critter list
+                population.add(critter_instance); //critter is added to the critter list
                 addToGrid(critter_instance);    //critter is added to the grid
-                population = CritterWorld.critterList;
             } else {
                 throw new InvalidCritterException(critter_class_name);
             }
@@ -609,7 +611,7 @@ public abstract class Critter {
             Class<?> critter_class = Class.forName(myPackage + "." +critter_class_name);
             Class<?> critter = Class.forName(myPackage + ".Critter");
             if(critter.isAssignableFrom(critter_class)) {
-                for(Critter crit : CritterWorld.critterList) {
+                for(Critter crit : population) {
                     if(critter_class.equals(crit.getClass()) || crit.getClass().isInstance(critter_class)){
                         result.add(crit);
                     }
@@ -703,9 +705,8 @@ public abstract class Critter {
      * Clear the world of all critters, dead and alive
      */
     public static void clearWorld() {		// Clear the critters and babies
-        CritterWorld.critterList.clear();
+        population.clear();
         CritterWorld.babyList.clear();
-		population.clear();
         grid.clear();
     }
 
@@ -730,14 +731,14 @@ public abstract class Critter {
      */
     public static void worldTimeStep() {
         initialMove = false;
-        for (Critter c : CritterWorld.critterList) {                // Move every critter
+        for (Critter c : population) {                // Move every critter
             c.doTimeStep();
-            c.numMoves = 0;
+            numMoves = 0;
         }
         List<Critter> stackedCrit = new ArrayList<>();
-        for (Critter c : CritterWorld.critterList) {
+        for (Critter c : population) {
             stackedCrit.add(c);
-            for (Critter c2 : CritterWorld.critterList) {
+            for (Critter c2 : population) {
                 if (c == c2)
                     continue;
                 else if (c.x_coord == c2.x_coord && c.y_coord == c2.y_coord)
@@ -748,7 +749,7 @@ public abstract class Critter {
             else
                 stackedCrit.clear();
         }
-        ListIterator<Critter> deadCheck = CritterWorld.critterList.listIterator();
+        ListIterator<Critter> deadCheck = population.listIterator();
         while (deadCheck.hasNext()) {
             if (deadCheck.next().getEnergy() <= 0) {
                 deadCheck.remove();
@@ -760,7 +761,7 @@ public abstract class Critter {
 //            }
 //        }
         for (Critter c : CritterWorld.babyList) {                  // Babies are now adults
-            CritterWorld.critterList.add(c);
+            population.add(c);
         }
         CritterWorld.babyList.clear();                        // Clear the dead
         //clearDead();
@@ -771,7 +772,24 @@ public abstract class Critter {
                 System.out.println("error processing: " + e.offending_class);
             }
         }
-        population = CritterWorld.critterList;
+    }
+
+    public static boolean findCritter(int x, int y) {
+        for (int i = 0; i < population.size(); i++) {
+            if (population.get(i).getX() == x && population.get(i).getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Critter getFoundCritter(int x, int y) {
+        for (int i = 0; i < population.size(); i++) {
+            if (population.get(i).getX() == x && population.get(i).getY() == y) {
+                return population.get(i);
+            }
+        }
+        return new Algae();
     }
 
     /**
@@ -786,8 +804,8 @@ public abstract class Critter {
         for (int i = 0; i < Params.world_height; i++) {
             System.out.print("|");
             for (int j = 0; j < Params.world_width; j++) {
-                if (CritterWorld.findCritter(j, i)) {
-                    System.out.print(CritterWorld.getFoundCritter(j,i).toString());
+                if (findCritter(j, i)) {
+                    System.out.print(getFoundCritter(j,i).toString());
                 } else {
                     System.out.print(" ");
                 }
