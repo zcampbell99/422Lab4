@@ -33,6 +33,7 @@ public abstract class Critter {
     public static int critter2Deaths = 0;
     public static int critter1Wins = 0;
     public static int repCount = 0;
+    public static int distanceTravelled = 0;
 
     // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
     static {
@@ -47,7 +48,6 @@ public abstract class Critter {
     public static void setSeed(long new_seed) {
         rand = new java.util.Random(new_seed);
     }
-
 
     /* a one-character long string that visually depicts your critter in the ASCII interface */
     public String toString() { return ""; }
@@ -105,10 +105,14 @@ public abstract class Critter {
             Point prev_pos = new Point(x_coord, y_coord);
             move(direction,steps, this);
             Point new_pos = new Point(x_coord, y_coord);
+            if (this.toString().equals("4"))
+                distanceTravelled += steps;
             if(afterInitialMove) {	//if called in fight(), for if the critter wants to run away
                 for(Map.Entry<Point, LinkedList<Critter>> entry : grid.entrySet()) { // iterate through each occupied position
                     if(new_pos.equals(new Point(entry.getKey().x, entry.getKey().y))) {
                         new_pos = prev_pos;  // if the position is already occupied by a critter don't move this one
+                        if (this.toString().equals("4"))
+                            distanceTravelled -= steps;
                         break;
                     }
                 }
