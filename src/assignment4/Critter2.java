@@ -16,7 +16,12 @@ public class Critter2 extends Critter {
         dir = Critter.getRandomInt(8);
     }
 
-    public boolean fight(String not_used) { return true; }
+    public boolean fight(String opponent) {
+        if (opponent.equals("2")) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Overriding abstract Critter's doTimeStep()

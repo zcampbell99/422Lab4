@@ -232,7 +232,7 @@ public class A4SampleTest{
 	{
 		input = input.replace("critter>", "")
 					 .replace("critters>", "")
-			         .replace("\r\n", "\n")
+//			         .replace("\r\n", "\n")
 			         .trim();
 		
 		return input;
