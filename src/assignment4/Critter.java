@@ -289,10 +289,7 @@ public abstract class Critter {
         for (int i = 0; i+1<stackOfCritters.size(); i++) {
             Critter challenger = stackOfCritters.get(i);
             Critter enemy = stackOfCritters.get(i+1);
-            boolean Afight = true;
-            boolean Bfight = true;
             if (!challenger.fight(enemy.toString())) {  //A doesn't want to fight and will try and walk/run away
-                Afight = false;
                 int walkDir = findAdjDir(challenger.x_coord, challenger.y_coord);
                 if (walkDir != -1) {
                     if (Critter.getRandomInt(10) <= 4 && !challenger.toString().equals("3")) {
@@ -303,7 +300,6 @@ public abstract class Critter {
                 }
             }
             if (!enemy.fight(challenger.toString())) {  //B doesn't want to fight and will try and walk/run away
-                Bfight = false;
                 int walkDir = findAdjDir(enemy.x_coord, enemy.y_coord);
                 if (walkDir != -1)
                     if (Critter.getRandomInt(10) <= 4 && !enemy.toString().equals("3")) {
@@ -585,6 +581,7 @@ public abstract class Critter {
                 }
                 CritterWorld.critterList.add(critter_instance); //critter is added to the critter list
                 addToGrid(critter_instance);    //critter is added to the grid
+                population = CritterWorld.critterList;
             } else {
                 throw new InvalidCritterException(critter_class_name);
             }
@@ -708,7 +705,7 @@ public abstract class Critter {
     public static void clearWorld() {		// Clear the critters and babies
         CritterWorld.critterList.clear();
         CritterWorld.babyList.clear();
-//		population.clear();
+		population.clear();
         grid.clear();
     }
 
@@ -774,6 +771,7 @@ public abstract class Critter {
                 System.out.println("error processing: " + e.offending_class);
             }
         }
+        population = CritterWorld.critterList;
     }
 
     /**
