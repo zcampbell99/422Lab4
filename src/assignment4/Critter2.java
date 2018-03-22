@@ -25,16 +25,17 @@ public class Critter2 extends Critter {
 
     /**
      * Overriding abstract Critter's doTimeStep()
-     * Can run 2 times in one time step at the cost of 1 run
+     * Can run at half the cost
      * Loses double energy by standing still
      * Reproduces 2 babies at a time
+     * Doesn't fight other Critter2's
      */
     @Override
     public void doTimeStep() {
         int doesMove = Critter.getRandomInt(10);
         if(doesMove <= 7){ //only moves with 80% chance
             run(dir);
-            this.setEnergy(this.getEnergy()+(Params.run_energy_cost));    //runs twice at the cost of only a single run
+            this.setEnergy(this.getEnergy()+(Params.run_energy_cost));    //runs at half the cost
         }else{
             this.setEnergy(this.getEnergy()-(Params.rest_energy_cost*2));    //loses twice as much energy when resting
         }
@@ -90,7 +91,8 @@ public class Critter2 extends Critter {
             total_back += c.genes[4];
             total_left += c.genes[5] + c.genes[6] + c.genes[7];
         }
-        System.out.print("" + critter2.size() + " total Critter4    ");
+        System.out.print("" + critter2.size() + " total Critter2    ");
+        System.out.print("" + critter2Deaths + " total Critter2 deaths    ");
         System.out.print("" + total_straight / (GENE_TOTAL * 0.01 * critter2.size()) + "% straight   ");
         System.out.print("" + total_back / (GENE_TOTAL * 0.01 * critter2.size()) + "% back   ");
         System.out.print("" + total_right / (GENE_TOTAL * 0.01 * critter2.size()) + "% right   ");

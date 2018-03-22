@@ -30,6 +30,8 @@ public abstract class Critter {
     private int y_coord;
     private int numMoves = 0; //for walk/run
     private static boolean afterInitialMove;
+    public static int critter2Deaths = 0;
+    public static int critter1Wins = 0;
     public static int repCount = 0;
 
     // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
@@ -459,19 +461,31 @@ public abstract class Critter {
                     if(fightA) rollA = getRandomInt(A.energy);  //getting the "attack power" for A if they are willing to fight
                     if(fightB) rollB = getRandomInt(B.energy);  //getting the "attack power" for B if they are willing to fight
                     if(rollA >= rollB)  {   //critter A wins
+                        if(A.toString().equals("1")){
+                            critter1Wins++;
+                        }
                         A.energy += B.energy/2;
                         B.energy = 0;
                     }
                     else {                  //critter B wins
+                        if(B.toString().equals("1")){
+                            critter1Wins++;
+                        }
                         B.energy += A.energy/2;
                         A.energy = 0;
                     }
                 }
                 if(!isAlive(A)) {   //if A is dead, remove from grid and critter list
+                    if(A.toString().equals("2")){
+                        critter2Deaths++;
+                    }
                     stackOfCritters.remove(A);
                     allCritters.remove(A);
                 }
                 if(!isAlive(B)) {   //if B is dead, remove from grid and critter list
+                    if(B.toString().equals("2")){
+                        critter2Deaths++;
+                    }
                     stackOfCritters.remove(B);
                     allCritters.remove(B);
                 }
@@ -507,6 +521,9 @@ public abstract class Critter {
         Iterator<Critter> it = allCritters.iterator();
         while(it.hasNext()) {
             if(!isAlive(it.next())) {
+                if(it.toString().equals("2")){
+                    critter2Deaths++;
+                }
                 it.remove();
             }
         }
