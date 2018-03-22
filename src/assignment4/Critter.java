@@ -1,7 +1,6 @@
 package assignment4;
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
- * Replace <...> with your actual data.
  * Zack Campbell
  * zcc254
  * Audrey Gan
@@ -28,7 +27,7 @@ public abstract class Critter {
     private static int timestep = 0;
     private int x_coord;
     private int y_coord;
-    private int numMoves = 0; //for walk/run
+    private int numMoves = 0;
     private static boolean afterInitialMove;
     public static int critter2Deaths = 0;
     public static int critter1Wins = 0;
@@ -54,6 +53,11 @@ public abstract class Critter {
 
     private int energy = 0;
     protected int getEnergy() { return energy; }
+
+    /**
+     * Set the current critter's energy
+     * @param e is the new energy
+     */
     protected void setEnergy(int e) {
         this.energy = e;
     }
@@ -97,7 +101,7 @@ public abstract class Critter {
      * @param numMoves done during one timestep
      */
     private void updateLoc(int direction, int steps, int numMoves) {
-        if(steps==1)
+        if(steps == 1)
             energy -= Params.walk_energy_cost;
         else
             energy -= Params.run_energy_cost;
@@ -107,7 +111,7 @@ public abstract class Critter {
             Point new_pos = new Point(x_coord, y_coord);
             if (this.toString().equals("4"))
                 distanceTravelled += steps;
-            if(afterInitialMove) {	//if called in fight(), for if the critter wants to run away
+            if(afterInitialMove) {	// if the critter wants to run away in a fight but already moved this timestep
                 for(Map.Entry<Point, LinkedList<Critter>> entry : grid.entrySet()) { // iterate through each occupied position
                     if(new_pos.equals(new Point(entry.getKey().x, entry.getKey().y))) {
                         new_pos = prev_pos;  // if the position is already occupied by a critter don't move this one
@@ -125,14 +129,12 @@ public abstract class Critter {
                 }
                 if(grid.containsKey(new_pos)) {
                     grid.get(new_pos).add(this); //add to arraylist if position already has a critter
-                }
-                else {
-                    LinkedList<Critter> newLoc = new LinkedList<Critter>();
+                } else {
+                    LinkedList<Critter> newLoc = new LinkedList<>();
                     newLoc.add(this);
                     grid.put(new_pos, newLoc); //create new key with an arraylist of the 1 critter
                 }
             }
-
             x_coord = new_pos.x; y_coord = new_pos.y; // change the critter position to the new position
         }
     }
@@ -146,36 +148,36 @@ public abstract class Critter {
     private static void move(int direction, int steps, Critter crit){
         Point new_pos = new Point(crit.x_coord, crit.y_coord);
         switch(direction) {
-            case 0:
+            case 0:                     // West
                 new_pos.x += steps;
                 break;
-            case 1:
+            case 1:                     // Northwest
                 new_pos.x += steps;
                 new_pos.y -= steps;
                 break;
-            case 2:
+            case 2:                     // North
                 new_pos.y -= steps;
                 break;
-            case 3:
+            case 3:                     // Northeast
                 new_pos.x -= steps;
                 new_pos.y -= steps;
                 break;
-            case 4:
+            case 4:                     // East
                 new_pos.x -= steps;
                 break;
-            case 5:
+            case 5:                     // Southeast
                 new_pos.x -= steps;
                 new_pos.y += steps;
                 break;
-            case 6:
+            case 6:                     // South
                 new_pos.y += steps;
                 break;
-            case 7:
+            case 7:                     // Southwest
                 new_pos.x += steps;
                 new_pos.y += steps;
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException();   // If it's an invalid direction
         }
 
         if(new_pos.x >= Params.world_width)
@@ -220,37 +222,25 @@ public abstract class Critter {
      * @throws InvalidCritterException if the class does not exist
      */
     public static void makeCritter(String critter_class_name) throws InvalidCritterException {
-        critter_class_name = critter_class_name.trim(); //get rid of any whitespace
+        critter_class_name = critter_class_name.trim();
         try {
             Class<?> critter_class = Class.forName(myPackage + "." + critter_class_name);
             Class<?> critter = Class.forName(myPackage + ".Critter");
             if(critter.isAssignableFrom(critter_class)) {
-                Critter critter_instance = (Critter)critter_class.newInstance(); //IllegalAccessException if no nullary constructor
-
+                Critter critter_instance = (Critter)critter_class.newInstance();
                 //prepare critter for simulation, create initial position
-                critter_instance.x_coord = getRandomInt(Params.world_width);  // have to use the constrained randomizer
+                critter_instance.x_coord = getRandomInt(Params.world_width);
                 critter_instance.y_coord = getRandomInt(Params.world_height); //set position
-                critter_instance.energy = Params.start_energy; //set energy
+                critter_instance.energy = Params.start_energy;
                 if(critter_class_name.equals("Algae")){
                     CritterWorld.numAlgae++;
                 }
-                allCritters.addLast(critter_instance); //should be able to cast to critter
-
-                // Critter is added to grid
+                allCritters.addLast(critter_instance);
                 addToGrid(critter_instance);
-
-
-            }
-            else
-                throw new InvalidCritterException(critter_class_name); //case when critter_class is not a subclass of critter
-        } catch (ClassNotFoundException e) {
-            throw new InvalidCritterException(critter_class_name); //case when critter_class doesn't even exist
-        } catch (NoClassDefFoundError e) {
-            throw new InvalidCritterException(critter_class_name); //case when critter_class is different in case, gives error on case-insensitive systems
-        } catch (InstantiationException e) {
-            throw new InvalidCritterException(critter_class_name); //case when critter_class isn't concrete
-        } catch (IllegalAccessException e) {
-            throw new InvalidCritterException(critter_class_name); //case when critter_class's definition can't be accessed, privilege thing? yep
+            } else
+                throw new InvalidCritterException(critter_class_name);
+        } catch (ClassNotFoundException | NoClassDefFoundError | InstantiationException | IllegalAccessException e) {
+            throw new InvalidCritterException(critter_class_name);
         }
     }
 
@@ -263,7 +253,7 @@ public abstract class Critter {
         if(grid.containsKey(critpos)) {
             grid.get(critpos).add(critter_instance);
         } else {
-            LinkedList<Critter> crit = new LinkedList<Critter>();
+            LinkedList<Critter> crit = new LinkedList<>();
             crit.add(critter_instance);
             grid.put(critpos, crit);
         }
@@ -276,7 +266,7 @@ public abstract class Critter {
      * @throws InvalidCritterException if the class does not exist
      */
     public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
-        List<Critter> result = new java.util.ArrayList<Critter>();
+        List<Critter> result = new java.util.ArrayList<>();
         try{
             Class<?> critter_class = Class.forName(myPackage + "." +critter_class_name);
             Class<?> critter = Class.forName(myPackage + ".Critter");
@@ -287,12 +277,9 @@ public abstract class Critter {
                     }
                 }
             }
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             throw new InvalidCritterException(critter_class_name); //case when critter_class doesn't exist
-        } catch (NoClassDefFoundError e) {
-            throw new InvalidCritterException(critter_class_name); //case when critter_class is different in case, gives error on case-insensitive systems
         }
-
         return result;
     }
 
@@ -427,7 +414,7 @@ public abstract class Critter {
             crit.numMoves = 0;      // So that each critter has the opportunity to move
             crit.doTimeStep();
         }
-        doEncounter();              // After all critters move, do encounters
+        encounters();              // After all critters move, do encounters
         updateRestEnergy();         // update energy of all critters from resting
         for (int i = 0; i < Params.refresh_algae_count; i++) {  // Regenerate algae
             try {
@@ -451,7 +438,7 @@ public abstract class Critter {
      * Decides the outcome of any critters who come into contact (occupy the same position) on the grid
      * critters will either run away or fight (fight results in a death)
      */
-    private static void doEncounter() {
+    private static void encounters() {
         afterInitialMove = true; // if walk/run is called after doTimeStep()
         for(Map.Entry<Point, LinkedList<Critter>> entry : grid.entrySet()) {
             LinkedList<Critter> stackOfCritters = entry.getValue();
@@ -461,7 +448,8 @@ public abstract class Critter {
                 boolean fightA = A.fight(B.toString()); // checking if this critter is willing to fight its opponent
                 boolean fightB = B.fight(A.toString());
                 if(isAlive(A) && isAlive(B) && (new Point(A.x_coord, A.y_coord)).equals(new Point(B.x_coord,B.y_coord))) {
-                    int rollA = 0; int rollB = 0;
+                    int rollA = 0;
+                    int rollB = 0;
                     if(fightA) rollA = getRandomInt(A.energy);  //getting the "attack power" for A if they are willing to fight
                     if(fightB) rollB = getRandomInt(B.energy);  //getting the "attack power" for B if they are willing to fight
                     if(rollA >= rollB)  {   //critter A wins
@@ -537,21 +525,21 @@ public abstract class Critter {
      * Prints a display of the grid world into console
      */
     public static void displayWorld() {
-        for (int i = 0; i < Params.world_height + 2; i++) {
-            for (int j = 0; j < Params.world_width + 2; j++) {
+        for (int i = 0; i < Params.world_height + 2; i++) {         // Rows
+            for (int j = 0; j < Params.world_width + 2; j++) {      // Columns
                 if (i == 0 || i == Params.world_height + 1) {
                     if (j == 0 || j == Params.world_width + 1)
                         System.out.print("+");
                     else
                         System.out.print("-");
-                } else if (j == 0 || j == Params.world_width + 1)
+                } else if (j == 0 || j == Params.world_width + 1) {
                     System.out.print("|");
-                else {
-                    Point p = new Point(i - 1, j - 1);
+                } else {
+                    Point p = new Point(j - 1, i - 1);
                     if (grid.containsKey(p)) {
-                        LinkedList<Critter> ac = grid.get(p);   //finds the critter at this point to display
-                        if (ac.size() >= 1) {
-                            System.out.print(ac.get(0).toString()); //gets the first critter that was at this point to print
+                        LinkedList<Critter> currCritList = grid.get(p);   //finds the critter at this point to display
+                        if (currCritList.size() >= 1) {
+                            System.out.print(currCritList.get(0).toString()); //gets the first critter that was at this point to print
                         }
                     } else
                         System.out.print(" ");
