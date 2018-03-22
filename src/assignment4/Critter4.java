@@ -7,6 +7,7 @@ public class Critter4 extends Critter {
     public String toString() { return "4"; }
 
     private int dir;
+    private boolean moved = false;
 
     /**
      * Critter4 constructor
@@ -43,10 +44,8 @@ public class Critter4 extends Critter {
         } else if (moving <= 7) {
             int temp = Params.walk_energy_cost;
             Params.walk_energy_cost = Params.run_energy_cost/3;
-            walk(Critter.getRandomInt(8));
-            numMoves--;
-            walk(Critter.getRandomInt(8));
-            numMoves--;
+            run(Critter.getRandomInt(8));
+//            walk(Critter.getRandomInt(8));
             walk(Critter.getRandomInt(8));
             Params.walk_energy_cost = temp;
         } else {

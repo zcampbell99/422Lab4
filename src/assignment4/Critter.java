@@ -57,7 +57,7 @@ public abstract class Critter {
 
     private int x_coord;
     private int y_coord;
-    protected static int numMoves = 0;
+    private int numMoves = 0;
 
     protected int getX() {
         return x_coord;
@@ -79,14 +79,14 @@ public abstract class Critter {
      * Updates the location and energy of the critter when moving
      * @param direction is the direction that the critter moves in
      * @param steps is the number of steps the critter takes (walk or run)
-     * @param numofmoves is the number of moves the critter has made in one time step
+     * @param numMoves is the number of moves the critter has made in one time step
      */
-    protected void updateLoc(int direction, int steps, int numofmoves) {
+    private void updateLoc(int direction, int steps, int numMoves) {
         if(steps==1)
             energy -= Params.walk_energy_cost;  //subtracts energy depending on if critter is walking or running
         else
             energy -= Params.run_energy_cost;
-        if(numofmoves == 1 && isAlive(this)) {
+        if(numMoves == 1 && isAlive(this)) {
             Point prev_pos = new Point(x_coord, y_coord);
             move(direction,steps, this);
             Point new_pos = new Point(x_coord, y_coord);
@@ -107,8 +107,7 @@ public abstract class Critter {
                 }
                 if(grid.containsKey(new_pos)) {
                     grid.get(new_pos).add(this); //add to arraylist if position already has a critter
-                }
-                else {
+                }else{
                     LinkedList<Critter> newLoc = new LinkedList<Critter>();
                     newLoc.add(this);
                     grid.put(new_pos, newLoc); //create new key with an arraylist of the 1 critter
@@ -121,6 +120,8 @@ public abstract class Critter {
     /**
      * Change the coordinates of the critter to an adjacent location
      * @param direction is the direction in which to place the critter adjacent to it's current position
+     * @param steps is the number of places to move
+     * @param crit is the critter that is moving
      */
     private static void move(int direction, int steps, Critter crit){
         Point new_pos = new Point(crit.x_coord, crit.y_coord);
@@ -157,16 +158,17 @@ public abstract class Critter {
                 throw new IllegalArgumentException();
         }
 
-        if(new_pos.x >= Params.world_width)
+        if(new_pos.x > Params.world_width-1)
             new_pos.x -= Params.world_width;
         else if (new_pos.x < 0)
             new_pos.x += Params.world_width;
-        if(new_pos.y >= Params.world_height)
+        if(new_pos.y > Params.world_height-1)
             new_pos.y -= Params.world_height;
         else if (new_pos.y < 0)
             new_pos.y += Params.world_height;
 
-        crit.x_coord = new_pos.x; crit.y_coord = new_pos.y;
+        crit.x_coord = new_pos.x;
+        crit.y_coord = new_pos.y;
     }
 
     /**
@@ -182,6 +184,9 @@ public abstract class Critter {
      * @param direction is the direction in which the critter will move on the grid
      */
     protected final void run(int direction) {
+        if(this.toString().equals("4")){
+            numMoves--;
+        }
         updateLoc(direction,2,++numMoves);
     }
 
@@ -735,7 +740,9 @@ public abstract class Critter {
     public static void worldTimeStep() {
         initialMove = false;
         for (Critter c : CritterWorld.critterList) {                // Move every critter
+            c.numMoves = 0;
             c.doTimeStep();
+
         }
         for (Map.Entry<Point, LinkedList<Critter>> c : grid.entrySet()) {      // Resolve all encounters
             if (c.getValue().size() > 1) {
@@ -747,7 +754,7 @@ public abstract class Critter {
         }
         CritterWorld.babyList.clear();                        // Clear the dead
         clearDead();
-        for (int i = CritterWorld.numAlgae; i < Params.refresh_algae_count; i++) {  // Refresh algae
+        for (int i = 0; i < Params.refresh_algae_count; i++) {  // Refresh algae
             try {
                 makeCritter("Algae");
             } catch (InvalidCritterException e) {
