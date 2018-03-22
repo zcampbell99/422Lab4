@@ -44,7 +44,7 @@ public class Critter3 extends Critter {
     @Override
     public void doTimeStep() {
         if (Critter.getRandomInt(10) <= 3) {                    // More likely to run than walk
-            updateLoc(dir, 1, ++numMoves);
+            walk(dir);
         } else {
             int temp = Params.run_energy_cost;                      // Running takes half as much energy
             Params.run_energy_cost /= 2;
